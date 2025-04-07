@@ -18,7 +18,8 @@
 #define MAX_CLIENTES 100
 #define MAX_HABITACIONES 50
 #define MAX_LONGITUD 100
-#define MAX_DIAS 5
+#define MAX_DIAS 30
+#define MAX_RESERVAS_CLIENTE 5
 
 typedef struct
 {
@@ -26,7 +27,7 @@ typedef struct
     char apellidos[MAX_LONGITUD];
     char dni[10];
     int tipoCliente;
-    int habReservadas;
+    int habReservadas; //contador de hab reservadas
 } tReg_Cliente;
 
 typedef struct
@@ -37,9 +38,9 @@ typedef struct
 } tReg_Habitacion;
 
 void mensajeBienvenida();                                                                         // subprograma terminado
-void gestionClientes(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes);                     // subprograma terminado
+void gestionClientes(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes);                     // subprograma terminado
 void gestionHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones); // subprograma terminado
-void gestionReservas();
+void gestionReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES], int *cont_reservas); // subprograma terminado;
 void informesEconomicos();
 void importarHabitaciones();
 int buscarcliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, char dni[10]); // subprograma terminado
@@ -58,8 +59,8 @@ int buscarHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_ha
 void consultaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones);
 void listadoGeneralHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones);
 
-void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_Clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_Habitaciones, char reservas[MAX_CLIENTES][MAX_HABITACIONES]);
-void cancelarReserva();
+void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES], int *cont_reservas);
+void cancelarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES], int *cont_reservas);
 void consultarReservasCliente();
 void listadoGeneralReservas();
 
@@ -68,9 +69,9 @@ int main()
     tReg_Cliente clientes[MAX_CLIENTES];            // registro de clientes
     tReg_Habitacion habitaciones[MAX_HABITACIONES]; // registro de habitaciones
 
-    char reservas[MAX_CLIENTES][MAX_HABITACIONES]; // matriz de reservas
+    char reservas[MAX_DIAS][MAX_HABITACIONES]; // matriz de reservas
 
-    int opcion, cont_habitaciones = 0, cont_clientes = 0;
+    int opcion, cont_habitaciones = 0, cont_clientes = 0, cont_reservas = 0;
 
     setlocale(LC_ALL, "spanish");
 
@@ -92,13 +93,13 @@ int main()
         switch (opcion)
         {
         case 1:
-            gestionClientes(clientes, cont_clientes);
+            gestionClientes(clientes, &cont_clientes);
             break;
         case 2:
             gestionHabitaciones(habitaciones, &cont_habitaciones);
             break;
         case 3:
-            gestionReservas(clientes, cont_clientes, habitaciones, cont_habitaciones, reservas);
+            gestionReservas(clientes, cont_clientes, habitaciones, cont_habitaciones, reservas, &cont_reservas);
             break;
         case 4:
             informesEconomicos();
@@ -125,7 +126,7 @@ void mensajeBienvenida()
     system("pause");
 }
 
-void gestionClientes(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
+void gestionClientes(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
 {
     int opcion;
 
@@ -221,7 +222,7 @@ void gestionHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *co
     } while (opcion != 0);
 }
 
-void gestionReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_CLIENTES][MAX_HABITACIONES])
+void gestionReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_CLIENTES][MAX_HABITACIONES], int *cont_reservas)
 {
     system("cls");
     int opcion;
@@ -242,10 +243,10 @@ void gestionReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tRe
         switch (opcion)
         {
         case 1:
-            realizarReserva(clientes, cont_clientes, habitaciones, cont_habitaciones, reservas);
+            realizarReserva(clientes, cont_clientes, habitaciones, cont_habitaciones, reservas, &*cont_reservas);
             break;
         case 2:
-            cancelarReserva();
+            cancelarReserva(clientes, cont_clientes, habitaciones, cont_habitaciones, reservas, &*cont_reservas);
             break;
 
         case 3:
@@ -850,14 +851,26 @@ void listadoGeneralHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], 
     system("pause");
 }
 
-void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_Clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_Habitaciones, char reservas[MAX_CLIENTES][MAX_HABITACIONES])
+void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_Clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES], int *cont_reservas)
 {
     char dni[10], codigo[7];
-    int posicionCliente, posicionHabitacion, diasReserva;
+    int posicionCliente, posicionHabitacion, diames;
+
+    for (int i = 0; i < MAX_DIAS; i++)
+    {
+            for (int j = 0; j < MAX_HABITACIONES; j++)
+            {
+                reservas[i][j] = '\0';
+            }
+    }
+
+    //cargarDatosReservas(reservas, MAX_DIAS, MAX_HABITACIONES);
 
     system("cls");
     printf("REALIZAR RESERVA");
     printf("\n----------------------------------");
+
+    
     printf("\nIntroduce el DNI del cliente: ");
     scanf("%s", dni);
 
@@ -868,12 +881,16 @@ void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_Clientes, tRe
         printf("\nERROR: Cliente no encontrado\n");
         system("pause");
         return;
+    }else if(clientes[posicionCliente].habReservadas == MAX_RESERVAS_CLIENTE){
+        printf("\nERROR: El cliente ya tiene el máximo de habitaciones (5) reservadas\n");
+        system("pause");
+        return;
     }
-
+    
     printf("\nIntroduce el código de la habitación: ");
     scanf("%s", codigo);
 
-    posicionHabitacion = buscarHabitacion(habitaciones, cont_Habitaciones, codigo);
+    posicionHabitacion = buscarHabitacion(habitaciones, cont_habitaciones, codigo);
 
     if (posicionHabitacion == -1)
     {
@@ -882,19 +899,76 @@ void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_Clientes, tRe
         return;
     }
 
-    printf("\nIntroduce el número de días de la reserva: ");
-    scanf("%d", &diasReserva);
+    printf("\nIntroduce el día del mes: ");
+    scanf("%d", &diames);
 
-    if (diasReserva <= 0 || diasReserva > MAX_DIAS)
+    if (diames < 1 || diames > 31)
     {
-        printf("\nERROR: Número no puede ser mayor que: \n", MAX_DIAS);
+        printf("\nERROR: Día no válido\n");
         system("pause");
         return;
     }
 
-    // Guardar la reserva en la matriz
-    strcpy(reservas[posicionCliente][posicionHabitacion], codigo);
-    clientes[posicionCliente].habReservadas++;
+    // Si no está vacío, ya está reservada
+    if (reservas[diames - 1][posicionHabitacion] != '\0') { 
+        printf("\nERROR: Habitación ya reservada en ese día\n");
+        system("pause");
+        return;
+    }
 
+    // Almacenar el DNI del cliente
+    strcpy(reservas[diames - 1][posicionHabitacion], dni);
+    clientes[posicionCliente].habReservadas++; // Incrementar el contador de habitaciones reservadas del cliente
+    cont_reservas ++;
     printf("\nReserva realizada correctamente.\n");
+    system("pause");
+}
+
+void cancelarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES], int *cont_reservas){
+    char dni[10], codigo[7];
+    int posicionCliente, posicionHabitacion, diames, reservasEliminadas = 0;
+
+
+    system("cls");
+    printf("CANCELAR RESERVA");
+    printf("\n----------------------------------");
+    printf("\nIntroduce el DNI del cliente: ");
+    scanf("%s", dni);
+
+    posicionCliente = buscarcliente(clientes, cont_clientes, dni);
+
+    if (posicionCliente == -1)
+    {
+        printf("\nERROR: Cliente no encontrado\n");
+        system("pause");
+        return;
+    }
+
+    // Cancelar la reserva
+    for (int dia = 0; dia < MAX_DIAS; dia++) {
+        for (int habitacion = 0; habitacion < MAX_HABITACIONES; habitacion++) {
+            if (strcmp(reservas[dia][habitacion], dni) == 0) {
+                reservas[dia][habitacion] = '\0'; // Eliminar la reserva
+                reservasEliminadas++;
+            }
+        }
+    }
+    
+    if (reservasEliminadas > 0) {
+        printf("\nSe han eliminado %d reservas asociadas al cliente con DNI %s.\n", reservasEliminadas, dni);
+    } else {
+        printf("\nNo se encontraron reservas asociadas al cliente con DNI %s.\n", dni);
+    }
+//falta meterlo al fichero cada una de las reservas que se quitan
+    system("pause");
+}
+
+void consultarReservasCliente()
+{
+    // Implementar la función para consultar reservas de un cliente
+}
+
+void listadoGeneralReservas()
+{
+    // Implementar la función para mostrar un listado general de reservas
 }
