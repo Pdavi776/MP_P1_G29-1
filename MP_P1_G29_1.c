@@ -916,6 +916,7 @@ void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_Clientes, tRe
         return;
     }
 
+
     // Almacenar el DNI del cliente
     strcpy(reservas[diames - 1][posicionHabitacion], dni);
     clientes[posicionCliente].habReservadas++; // Incrementar el contador de habitaciones reservadas del cliente
