@@ -37,22 +37,22 @@ typedef struct
     float precioNoche;
 } tReg_Habitacion;
 
-void mensajeBienvenida();                                                                                                                                                                                           
-void gestionClientes(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes);                                                                                                                                      
-void gestionHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones);                                                                                                                   
-void gestionReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES], int *cont_reservas); ;
+void mensajeBienvenida();
+void gestionClientes(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes);
+void gestionHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones);
+void gestionReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES], int *cont_reservas);
 void informesEconomicos();
 void importarHabitaciones();
-int buscarcliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, char dni[10]); 
+int buscarcliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, char dni[10]);
 
-void altaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes); 
+void altaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes);
 void bajaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes);
 void modificarCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes);
 void consultaCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes);
 void listadoGeneralClientes(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes);
 void listadoPorCategoria(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes);
 
-void altaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones); 
+void altaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones);
 void bajaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones);
 void modificarHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones);
 int buscarHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char codigo[7]);
@@ -64,13 +64,12 @@ void cancelarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tRe
 void consultarReservasCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES]);
 void listadoGeneralReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES], int cont_reservas);
 
-
 int main()
 {
     tReg_Cliente clientes[MAX_CLIENTES];            // registro de clientes
     tReg_Habitacion habitaciones[MAX_HABITACIONES]; // registro de habitaciones
 
-    char reservas[MAX_DIAS][MAX_HABITACIONES]; // matriz de reservas
+    char reservas[MAX_DIAS][MAX_HABITACIONES][10]; // matriz de reservas
 
     int opcion, cont_habitaciones = 0, cont_clientes = 0, cont_reservas = 0;
 
@@ -1013,7 +1012,7 @@ void consultarReservasCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clie
         }
 
         printf("\nImporte total de las reservas: %.2f\n", importeTotal);
-        
+
         printf("\n\n ¿Desea seguir consultando reservas de clientes? (Y/N): ");
         scanf(" %c", &resp);
 
@@ -1029,13 +1028,17 @@ void listadoGeneralReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_client
     printf("\n-----------------------------------------------");
     printf("\n\t  Nombre Cliente \t\tCódigo habitación \t\tTipo habitación");
 
-    for (int i = 0; i < MAX_DIAS; i++) {
-        for (int habitacion = 0; habitacion < cont_habitaciones; habitacion++) {
+    for (int i = 0; i < MAX_DIAS; i++)
+    {
+        for (int habitacion = 0; habitacion < cont_habitaciones; habitacion++)
+        {
             // Comprobar si la reserva está ocupada para no tener errores posteriores
-            if (reservas[i][habitacion] != '\0') {
+            if (reservas[i][habitacion] != '\0')
+            {
                 // Buscar al cliente por su DNI en la matriz de reservas
                 int posicionCliente = buscarcliente(clientes, cont_clientes, reservas[i][habitacion]);
-                if (posicionCliente != -1) {
+                if (posicionCliente != -1)
+                {
                     printf("%s %s\t\t%s\t\t%d\n", clientes[posicionCliente].nombre, clientes[posicionCliente].apellidos, habitaciones[habitacion].codigo, habitaciones[habitacion].tipoHabitacion);
                 }
             }
