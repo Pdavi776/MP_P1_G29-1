@@ -71,8 +71,10 @@ int main()
 
     char reservas[MAX_DIAS][MAX_HABITACIONES][10]; // matriz de reservas
 
-    for (int i = 0; i < MAX_DIAS; i++) {
-        for (int j = 0; j < MAX_HABITACIONES; j++) {
+    for (int i = 0; i < MAX_DIAS; i++)
+    {
+        for (int j = 0; j < MAX_HABITACIONES; j++)
+        {
             reservas[i][j][0] = '\0'; // Marca la celda como vacía
         }
     }
@@ -376,7 +378,7 @@ void altaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
 
         printf("\n\n ¿Desea seguir dandod de alta clientes? (Y/N)");
 
-        resp = scanf("%c", &resp);
+        scanf("%c", &resp);
         resp = tolower(resp);
 
     } while (*cont_clientes < MAX_CLIENTES && resp == 'y');
@@ -413,6 +415,7 @@ void bajaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
         }
 
         printf("\n\n ¿Desea seguir dando de baja clientes? (Y/N): ");
+        
         scanf(" %c", &resp);
         resp = tolower(resp);
 
@@ -553,7 +556,7 @@ void modificarCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
 
         printf("\n\n ¿Desea seguir modificando clientes? (Y/N)");
 
-        resp = scanf("%c", &resp);
+        scanf("%c", &resp);
 
     } while (posicion == -1 || resp == 'y' || resp == 'Y');
 }
@@ -821,7 +824,7 @@ void modificarHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int con
         }
 
         printf("\n\n ¿Desea seguir modificando habitaciones? (Y/N)");
-        resp = scanf("%c", &resp);
+        scanf("%c", &resp);
 
     } while (posicion == -1 || resp == 'y' || resp == 'Y');
 }
@@ -863,14 +866,6 @@ void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tRe
 {
     char dni[10], codigo[7];
     int posicionCliente, posicionHabitacion, diames;
-
-    for (int i = 0; i < MAX_DIAS; i++)
-    {
-        for (int j = 0; j < MAX_HABITACIONES; j++)
-        {
-            reservas[i][j][0] = '\0';
-        }
-    }
 
     // cargarDatosReservas(reservas, MAX_DIAS, MAX_HABITACIONES);
 
@@ -936,17 +931,18 @@ void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tRe
 
 void cancelarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_reservas)
 {
-    char dni[10], codhab;
+    char dni[10];
     int posicionCliente, reservasEliminadas = 0;
 
-    //time_t tiempo actual, meter arriba una variable y esto sirve para los ficheros
-    
+    // time_t tiempo actual, meter arriba una variable y esto sirve para los ficheros
 
     system("cls");
     printf("CANCELAR RESERVA");
     printf("\n----------------------------------");
     printf("\nIntroduce el DNI del cliente: ");
     scanf("%s", dni);
+
+    // validardni(); // Validar el DNI con el subprograma indicado
 
     posicionCliente = buscarcliente(clientes, cont_clientes, dni);
 
@@ -966,7 +962,12 @@ void cancelarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tRe
             {
                 reservas[i][j][0] = '\0'; // Eliminar la reserva
                 reservasEliminadas++;
-                (*cont_reservas)--;
+
+                if (*cont_reservas > 0)
+                {
+                    (*cont_reservas)--;
+                } // Decrementar el contador de reservas totales si es mayor que 0
+
                 clientes[posicionCliente].habReservadas--; // Decrementar el contador de habitaciones reservadas del cliente
             }
         }
