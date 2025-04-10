@@ -40,9 +40,9 @@ typedef struct
 void mensajeBienvenida();
 void gestionClientes(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes);
 void gestionHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones);
-void gestionReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES], int *cont_reservas);
-void informesEconomicos();
-void importarHabitaciones();
+void gestionReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_reservas);
+// void informesEconomicos();
+// void importarHabitaciones();
 int buscarcliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, char dni[10]);
 
 void altaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes);
@@ -59,10 +59,10 @@ int buscarHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_ha
 void consultaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones);
 void listadoGeneralHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones);
 
-void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES], int *cont_reservas);
-void cancelarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES], int *cont_reservas);
-void consultarReservasCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES]);
-void listadoGeneralReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES], int cont_reservas);
+void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_reservas);
+void cancelarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_reservas);
+void consultarReservasCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10]);
+void listadoGeneralReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int cont_reservas);
 
 int main()
 {
@@ -70,6 +70,12 @@ int main()
     tReg_Habitacion habitaciones[MAX_HABITACIONES]; // registro de habitaciones
 
     char reservas[MAX_DIAS][MAX_HABITACIONES][10]; // matriz de reservas
+
+    for (int i = 0; i < MAX_DIAS; i++) {
+        for (int j = 0; j < MAX_HABITACIONES; j++) {
+            reservas[i][j][0] = '\0'; // Marca la celda como vacía
+        }
+    }
 
     int opcion, cont_habitaciones = 0, cont_clientes = 0, cont_reservas = 0;
 
@@ -102,10 +108,10 @@ int main()
             gestionReservas(clientes, cont_clientes, habitaciones, cont_habitaciones, reservas, &cont_reservas);
             break;
         case 4:
-            informesEconomicos();
+            // informesEconomicos();
             break;
         case 5:
-            importarHabitaciones();
+            // importarHabitaciones();
             break;
         case 0:
             break;
@@ -155,16 +161,16 @@ void gestionClientes(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
             bajaCliente(clientes, &*cont_clientes);
             break;
         case 3:
-            modificarCliente(clientes, cont_clientes);
+            modificarCliente(clientes, *cont_clientes);
             break;
         case 4:
-            consultaCliente(clientes, cont_clientes);
+            consultaCliente(clientes, *cont_clientes);
             break;
         case 5:
-            listadoGeneralClientes(clientes, cont_clientes);
+            listadoGeneralClientes(clientes, *cont_clientes);
             break;
         case 6:
-            listadoPorCategoria(clientes, cont_clientes);
+            listadoPorCategoria(clientes, *cont_clientes);
             break;
         case 0:
             break;
@@ -198,19 +204,19 @@ void gestionHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *co
         switch (opcion)
         {
         case 1:
-            altaHabitacion(habitaciones, &cont_habitaciones);
+            altaHabitacion(habitaciones, &*cont_habitaciones);
             break;
         case 2:
-            bajaHabitacion(habitaciones, &cont_habitaciones);
+            bajaHabitacion(habitaciones, &*cont_habitaciones);
             break;
         case 3:
-            modificarHabitacion(habitaciones, cont_habitaciones);
+            modificarHabitacion(habitaciones, *cont_habitaciones);
             break;
         case 4:
-            consultaHabitacion(habitaciones, cont_habitaciones);
+            consultaHabitacion(habitaciones, *cont_habitaciones);
             break;
         case 5:
-            listadoGeneralHabitaciones(habitaciones, cont_habitaciones);
+            listadoGeneralHabitaciones(habitaciones, *cont_habitaciones);
             break;
         case 0:
             break;
@@ -222,7 +228,7 @@ void gestionHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *co
     } while (opcion != 0);
 }
 
-void gestionReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_CLIENTES][MAX_HABITACIONES], int *cont_reservas)
+void gestionReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_reservas)
 {
     system("cls");
     int opcion;
@@ -254,7 +260,7 @@ void gestionReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tRe
             break;
 
         case 4:
-            listadoGeneralReservas(clientes, cont_clientes, habitaciones, cont_habitaciones, reservas, cont_reservas);
+            listadoGeneralReservas(clientes, cont_clientes, habitaciones, cont_habitaciones, reservas, *cont_reservas);
             break;
 
         case 0:
@@ -267,7 +273,7 @@ void gestionReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tRe
         }
     } while (opcion != 0);
 }
-
+/*
 void informesEconomicos()
 {
     int opcion;
@@ -310,7 +316,7 @@ void informesEconomicos()
             break;
         }
     } while (opcion != 0);
-}
+}*/
 
 void altaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
 {
@@ -341,13 +347,15 @@ void altaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
                     break;
                 }
             }
-        } while (valido = 0);
+        } while (valido == 0);
 
         printf("\nNOMBRE: ");
+        fflush(stdin);
         fgets(clientes[*cont_clientes].nombre, MAX_LONGITUD, stdin);
         strtok(clientes[*cont_clientes].nombre, "\n");
 
         printf("\nAPELLIDOS: ");
+        fflush(stdin);
         fgets(clientes[*cont_clientes].apellidos, MAX_LONGITUD, stdin);
         strtok(clientes[*cont_clientes].apellidos, "\n");
 
@@ -610,20 +618,20 @@ void altaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_ha
                     break;
                 }
             }
-        } while ((valido = 0));
+        } while (valido == 0);
 
         do
         {
             printf("\nTIPO (1.- Individual)(2.- Doble)(3.- Suite): ");
             scanf("%d", &habitaciones[*cont_habitaciones].tipoHabitacion);
 
-            if ((habitaciones[*cont_habitaciones].tipoHabitacion != 1) || (habitaciones[*cont_habitaciones].tipoHabitacion != 2) || (habitaciones[*cont_habitaciones].tipoHabitacion != 3))
+            if ((habitaciones[*cont_habitaciones].tipoHabitacion != 1) && (habitaciones[*cont_habitaciones].tipoHabitacion != 2) && (habitaciones[*cont_habitaciones].tipoHabitacion != 3))
             {
                 printf("\nERROR: Tipo de habitación no válido. Inserte un tipo de habitación válido...\n\n");
                 system("pause");
             }
 
-        } while ((habitaciones[*cont_habitaciones].tipoHabitacion != 1) || (habitaciones[*cont_habitaciones].tipoHabitacion != 2) || (habitaciones[*cont_habitaciones].tipoHabitacion != 3));
+        } while ((habitaciones[*cont_habitaciones].tipoHabitacion != 1) && (habitaciones[*cont_habitaciones].tipoHabitacion != 2) && (habitaciones[*cont_habitaciones].tipoHabitacion != 3));
 
         do
         {
@@ -733,7 +741,7 @@ void modificarHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int con
         printf("\nIntroduce el código de la habitación a modificar: ");
         scanf("%s", codigo);
 
-        posicion = buscarhabitacion(habitaciones, cont_habitaciones, codigo);
+        posicion = buscarHabitacion(habitaciones, cont_habitaciones, codigo);
 
         printf("\nInformación actual de la habitación:");
 
@@ -752,13 +760,13 @@ void modificarHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int con
                 printf("\nTIPO (1.- Individual)(2.- Doble)(3.- Suite): ");
                 scanf("%d", &habitaciones[posicion].tipoHabitacion);
 
-                if ((habitaciones[posicion].tipoHabitacion != 1) || (habitaciones[posicion].tipoHabitacion != 2) || (habitaciones[posicion].tipoHabitacion != 3))
+                if ((habitaciones[posicion].tipoHabitacion != 1) && (habitaciones[posicion].tipoHabitacion != 2) && (habitaciones[posicion].tipoHabitacion != 3))
                 {
                     printf("\nERROR: Tipo de habitación no válido. Inserte un tipo de habitación válido...\n\n");
                     system("pause");
                 }
 
-            } while ((habitaciones[posicion].tipoHabitacion != 1) || (habitaciones[posicion].tipoHabitacion != 2) || (habitaciones[posicion].tipoHabitacion != 3));
+            } while ((habitaciones[posicion].tipoHabitacion != 1) && (habitaciones[posicion].tipoHabitacion != 2) && (habitaciones[posicion].tipoHabitacion != 3));
             break;
 
         case 2: // codigo para modificar el PRECIO de la habitación
@@ -780,13 +788,13 @@ void modificarHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int con
                 printf("\nTIPO (1.- Individual)(2.- Doble)(3.- Suite): ");
                 scanf("%d", &habitaciones[posicion].tipoHabitacion);
 
-                if ((habitaciones[posicion].tipoHabitacion != 1) || (habitaciones[posicion].tipoHabitacion != 2) || (habitaciones[posicion].tipoHabitacion != 3))
+                if ((habitaciones[posicion].tipoHabitacion != 1) && (habitaciones[posicion].tipoHabitacion != 2) && (habitaciones[posicion].tipoHabitacion != 3))
                 {
                     printf("\nERROR: Tipo de habitación no válido. Inserte un tipo de habitación válido...\n\n");
                     system("pause");
                 }
 
-            } while ((habitaciones[posicion].tipoHabitacion != 1) || (habitaciones[posicion].tipoHabitacion != 2) || (habitaciones[posicion].tipoHabitacion != 3));
+            } while ((habitaciones[posicion].tipoHabitacion != 1) && (habitaciones[posicion].tipoHabitacion != 2) && (habitaciones[posicion].tipoHabitacion != 3));
 
             do
             {
@@ -851,7 +859,7 @@ void listadoGeneralHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], 
     system("pause");
 }
 
-void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_Clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES], int *cont_reservas)
+void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_reservas)
 {
     char dni[10], codigo[7];
     int posicionCliente, posicionHabitacion, diames;
@@ -860,7 +868,7 @@ void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_Clientes, tRe
     {
         for (int j = 0; j < MAX_HABITACIONES; j++)
         {
-            reservas[i][j] = '\0';
+            reservas[i][j][0] = '\0';
         }
     }
 
@@ -873,7 +881,7 @@ void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_Clientes, tRe
     printf("\nIntroduce el DNI del cliente: ");
     scanf("%s", dni);
 
-    posicionCliente = buscarcliente(clientes, cont_Clientes, dni);
+    posicionCliente = buscarcliente(clientes, cont_clientes, dni);
 
     if (posicionCliente == -1)
     {
@@ -911,7 +919,7 @@ void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_Clientes, tRe
     }
 
     // Si no está vacío, ya está reservada
-    if (reservas[diames - 1][posicionHabitacion] != '\0')
+    if (reservas[diames - 1][posicionHabitacion][0] != '\0')
     {
         printf("\nERROR: Habitación ya reservada en ese día\n");
         system("pause");
@@ -921,15 +929,18 @@ void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_Clientes, tRe
     // Almacenar el DNI del cliente
     strcpy(reservas[diames - 1][posicionHabitacion], dni);
     clientes[posicionCliente].habReservadas++; // Incrementar el contador de habitaciones reservadas del cliente
-    cont_reservas++;
+    (*cont_reservas)++;
     printf("\nReserva realizada correctamente.\n");
     system("pause");
 }
 
-void cancelarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES], int *cont_reservas)
+void cancelarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_reservas)
 {
-    char dni[10];
+    char dni[10], codhab;
     int posicionCliente, reservasEliminadas = 0;
+
+    //time_t tiempo actual, meter arriba una variable y esto sirve para los ficheros
+    
 
     system("cls");
     printf("CANCELAR RESERVA");
@@ -947,14 +958,16 @@ void cancelarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tRe
     }
 
     // Cancelar la reserva
-    for (int dia = 0; dia < MAX_DIAS; dia++)
+    for (int i = 0; i < MAX_DIAS; i++)
     {
-        for (int habitacion = 0; habitacion < MAX_HABITACIONES; habitacion++)
+        for (int j = 0; j < MAX_HABITACIONES; j++)
         {
-            if (strcmp(reservas[dia][habitacion], dni) == 0)
+            if (strcmp(reservas[i][j], dni) == 0)
             {
-                reservas[dia][habitacion] = '\0'; // Eliminar la reserva
+                reservas[i][j][0] = '\0'; // Eliminar la reserva
                 reservasEliminadas++;
+                (*cont_reservas)--;
+                clientes[posicionCliente].habReservadas--; // Decrementar el contador de habitaciones reservadas del cliente
             }
         }
     }
@@ -971,7 +984,7 @@ void cancelarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tRe
     system("pause");
 }
 
-void consultarReservasCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES])
+void consultarReservasCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10])
 {
     char resp;
     char dni[10];
@@ -1019,10 +1032,8 @@ void consultarReservasCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clie
     } while (resp == 'y' || resp == 'Y');
 }
 
-void listadoGeneralReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES], int cont_reservas)
+void listadoGeneralReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int cont_reservas)
 {
-    char resp;
-
     system("cls");
     printf("LISTADO GENERAL DE RESERVAS");
     printf("\n-----------------------------------------------");
@@ -1030,16 +1041,16 @@ void listadoGeneralReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_client
 
     for (int i = 0; i < MAX_DIAS; i++)
     {
-        for (int habitacion = 0; habitacion < cont_habitaciones; habitacion++)
+        for (int j = 0; j < cont_habitaciones; j++)
         {
             // Comprobar si la reserva está ocupada para no tener errores posteriores
-            if (reservas[i][habitacion] != '\0')
+            if (reservas[i][j][0] != '\0')
             {
                 // Buscar al cliente por su DNI en la matriz de reservas
-                int posicionCliente = buscarcliente(clientes, cont_clientes, reservas[i][habitacion]);
+                int posicionCliente = buscarcliente(clientes, cont_clientes, reservas[i][j]);
                 if (posicionCliente != -1)
                 {
-                    printf("%s %s\t\t%s\t\t%d\n", clientes[posicionCliente].nombre, clientes[posicionCliente].apellidos, habitaciones[habitacion].codigo, habitaciones[habitacion].tipoHabitacion);
+                    printf("%s %s\t\t%s\t\t%d\n", clientes[posicionCliente].nombre, clientes[posicionCliente].apellidos, habitaciones[j].codigo, habitaciones[j].tipoHabitacion);
                 }
             }
         }
