@@ -14,6 +14,7 @@
 #include <locale.h>
 #include <math.h>
 #include <ctype.h>
+#include <time.h>
 
 #define MAX_CLIENTES 100
 #define MAX_HABITACIONES 50
@@ -41,7 +42,7 @@ void mensajeBienvenida();
 void gestionClientes(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes);
 void gestionHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones);
 void gestionReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_reservas);
-// void informesEconomicos();
+void informesEconomicos(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10]);
 // void importarHabitaciones();
 int buscarcliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, char dni[10]);
 
@@ -50,7 +51,7 @@ void bajaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes);
 void modificarCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes);
 void consultaCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes);
 void listadoGeneralClientes(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes);
-void listadoPorCategoria(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes);
+// void listadoPorCategoria(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes);
 
 void altaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones);
 void bajaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones);
@@ -63,6 +64,10 @@ void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tRe
 void cancelarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_reservas);
 void consultarReservasCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10]);
 void listadoGeneralReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int cont_reservas);
+
+void informeMensualPorCategoriaCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones);
+//void informeMensualOcupacionHabitaciones();
+//void informeMensualIngresosReservas();
 
 int main()
 {
@@ -172,7 +177,7 @@ void gestionClientes(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
             listadoGeneralClientes(clientes, *cont_clientes);
             break;
         case 6:
-            listadoPorCategoria(clientes, *cont_clientes);
+            // listadoPorCategoria(clientes, *cont_clientes);
             break;
         case 0:
             break;
@@ -415,7 +420,7 @@ void bajaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
         }
 
         printf("\n\n ¿Desea seguir dando de baja clientes? (Y/N): ");
-        
+
         scanf(" %c", &resp);
         resp = tolower(resp);
 
@@ -479,11 +484,18 @@ void modificarCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
 
         posicion = buscarcliente(clientes, cont_clientes, dni);
 
+        if (posicion == -1)
+        {
+            printf("\nERROR: Cliente no encontrado\n");
+            system("pause");
+            return;
+        }
+
         printf("\nInformación actual del cliente:");
 
-        printf("\n\nDNI: %s", clientes[posicion].dni);
-        printf("\nNombre: %s", clientes[posicion].nombre);
-        printf("\nApellidos: %s", clientes[posicion].apellidos);
+        printf("\n\nDNI: %s ", clientes[posicion].dni);
+        printf("\nNombre: %s ", clientes[posicion].nombre);
+        printf("\nApellidos: %s ", clientes[posicion].apellidos);
         printf("\nTipo de cliente: %d", clientes[posicion].tipoCliente);
         printf("\nHabitaciones reservadas: %d", clientes[posicion].habReservadas);
 
@@ -496,12 +508,15 @@ void modificarCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
             printf("\nNuevo nombre: ");
             fflush(stdin);
             fgets(clientes[posicion].nombre, MAX_LONGITUD, stdin);
+            fflush(stdin);
             strtok(clientes[posicion].nombre, "\n");
             break;
 
         case 2: // codigo para modificar los APELLIDOS del cliente
             printf("\nNuevos apellidos: ");
+            fflush(stdin);
             fgets(clientes[posicion].apellidos, MAX_LONGITUD, stdin);
+            fflush(stdin);
             strtok(clientes[posicion].apellidos, "\n");
             break;
 
@@ -509,7 +524,9 @@ void modificarCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
             do
             {
                 printf("\nTIPO (1.- Normal)(2.- VIP)(3.- Empresa): ");
+                fflush(stdin);
                 scanf("%d", &clientes[posicion].tipoCliente);
+                fflush(stdin);
 
                 if ((clientes[posicion].tipoCliente != 1) && (clientes[posicion].tipoCliente != 2) && (clientes[posicion].tipoCliente != 3))
                 {
@@ -521,17 +538,23 @@ void modificarCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
 
         case 4: // codigo para modificar todos los campos posibles
             printf("\nNuevo nombre: ");
+            fflush(stdin);
             fgets(clientes[posicion].nombre, MAX_LONGITUD, stdin);
+            fflush(stdin);
             strtok(clientes[posicion].nombre, "\n");
 
             printf("\nNuevos apellidos: ");
+            fflush(stdin);
             fgets(clientes[posicion].apellidos, MAX_LONGITUD, stdin);
+            fflush(stdin);
             strtok(clientes[posicion].apellidos, "\n");
 
             do
             {
                 printf("\nTIPO (1.- Normal)(2.- VIP)(3.- Empresa): ");
+                fflush(stdin);
                 scanf("%d", &clientes[posicion].tipoCliente);
+                fflush(stdin);
 
                 if ((clientes[posicion].tipoCliente != 1) && (clientes[posicion].tipoCliente != 2) && (clientes[posicion].tipoCliente != 3))
                 {
@@ -650,7 +673,8 @@ void altaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_ha
         (*cont_habitaciones)++;
 
         printf("\n\n ¿Desea seguir dandod de alta habitaciones? (Y/N)");
-        resp = scanf("%c", &resp);
+
+        scanf("%c", &resp);
         resp = tolower(resp);
 
     } while (*cont_habitaciones < MAX_HABITACIONES && resp == 'y');
@@ -687,7 +711,7 @@ void bajaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_ha
         }
 
         printf("\n\n ¿Desea seguir dando de baja habitaciones? (Y/N)");
-        resp = scanf("%c", &resp);
+        scanf("%c", &resp);
 
     } while (posicion == -1 || resp == 'y' || resp == 'Y');
 }
@@ -1060,4 +1084,103 @@ void listadoGeneralReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_client
     printf("\n\n TOTAL: %d reservas activas", cont_reservas);
 
     system("pause");
+}
+
+void informesEconomicos(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10])
+{
+
+    int opcion;
+
+    do
+    {
+        system("cls");
+        printf("INFORMES ECONÓMICOS");
+        printf("\n----------------------------------");
+        printf("\n\t 1.- Informe Mensual por Categoría de Cliente");
+        printf("\n\t 2.- Informe Mensual de Ocupación de Habitaciones");
+        printf("\n\t 3.- Informe Mensual de Ingresos por Reservas");
+
+        printf("\n\t 0.- Volver al menú principal");
+
+        printf("\n Elija opción: ");
+        scanf("%d", &opcion);
+
+        switch (opcion)
+        {
+        case 1:
+            informeMensualPorCategoriaCliente(clientes, cont_clientes, habitaciones, cont_habitaciones);
+            break;
+        case 2:
+            //informeMensualOcupacionHabitaciones();
+            break;
+        case 3:
+            //informeMensualIngresosReservas();
+            break;
+        case 0:
+            break;
+
+        default:
+            printf("Por favor, introduzca una opción válida.\n\n");
+            system("pause");
+            break;
+        }
+    } while (opcion != 0);
+}
+
+void informeMensualPorCategoriaCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones)
+{
+    int total, normal, vip, empresa;
+    float impnormal, impvip, impempresa, imptotal;
+        system("cls");
+        printf("INFORME MENSUAL (por Categorías de Cliente)\n");
+        printf("-----------------------------------------------\n");
+
+        printf("\n\t **Numero de clientes: ");
+        for(int i = 0; i < cont_clientes; i++)
+        {
+            if(clientes[i].tipoCliente == 1)
+            {
+                normal += 1;
+            }
+            else if(clientes[i].tipoCliente == 2)
+            {
+                vip += 1;
+            }
+            else if(clientes[i].tipoCliente == 3)
+            {
+                empresa += 1;
+            }
+            total += 1;
+        }
+        printf("\n\t **Clientes Normales: %d", normal);
+        printf("\n\t **Clientes VIP: %d", vip);
+        printf("\n\t **Clientes Empresa: %d", empresa);
+        printf("\n\t **Total: %d clientes", total);
+
+        printf("\n\n**Importes registrados:");
+
+        for(int j = 0; j < cont_clientes; j++)
+        {
+            if(clientes[j].tipoCliente == 1)
+            {
+                impnormal += habitaciones[j].precioNoche;
+            }
+            else if(clientes[j].tipoCliente == 2)
+            {
+                impvip += habitaciones[j].precioNoche;
+            }
+            else if(clientes[j].tipoCliente == 3)
+            {
+                impempresa += habitaciones[j].precioNoche;
+            }
+            imptotal += habitaciones[j].precioNoche;
+        }
+
+        printf("\n\t **Normal: %.2f €", impnormal);
+        printf("\n\t **VIP: %.2f €", impvip);
+        printf("\n\t **Empresa: %.2f €", impempresa);
+        printf("\n\t **Total: %.2f €", imptotal);
+        printf("\n\n\n");
+
+        system("pause");
 }
