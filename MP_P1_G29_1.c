@@ -66,8 +66,8 @@ void consultarReservasCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clie
 void listadoGeneralReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int cont_reservas);
 
 void informeMensualPorCategoriaCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones);
-//void informeMensualOcupacionHabitaciones();
-//void informeMensualIngresosReservas();
+// void informeMensualOcupacionHabitaciones();
+// void informeMensualIngresosReservas();
 
 int main()
 {
@@ -1111,10 +1111,10 @@ void informesEconomicos(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, 
             informeMensualPorCategoriaCliente(clientes, cont_clientes, habitaciones, cont_habitaciones);
             break;
         case 2:
-            //informeMensualOcupacionHabitaciones();
+            // informeMensualOcupacionHabitaciones();
             break;
         case 3:
-            //informeMensualIngresosReservas();
+            // informeMensualIngresosReservas();
             break;
         case 0:
             break;
@@ -1131,56 +1131,56 @@ void informeMensualPorCategoriaCliente(tReg_Cliente clientes[MAX_CLIENTES], int 
 {
     int total, normal, vip, empresa;
     float impnormal, impvip, impempresa, imptotal;
-        system("cls");
-        printf("INFORME MENSUAL (por Categorías de Cliente)\n");
-        printf("-----------------------------------------------\n");
+    system("cls");
+    printf("INFORME MENSUAL (por Categorías de Cliente)\n");
+    printf("-----------------------------------------------\n");
 
-        printf("\n\t **Numero de clientes: ");
-        for(int i = 0; i < cont_clientes; i++)
+    printf("\n\t **Numero de clientes: ");
+    for (int i = 0; i < cont_clientes; i++)
+    {
+        if (clientes[i].tipoCliente == 1)
         {
-            if(clientes[i].tipoCliente == 1)
-            {
-                normal += 1;
-            }
-            else if(clientes[i].tipoCliente == 2)
-            {
-                vip += 1;
-            }
-            else if(clientes[i].tipoCliente == 3)
-            {
-                empresa += 1;
-            }
-            total += 1;
+            normal += 1;
         }
-        printf("\n\t **Clientes Normales: %d", normal);
-        printf("\n\t **Clientes VIP: %d", vip);
-        printf("\n\t **Clientes Empresa: %d", empresa);
-        printf("\n\t **Total: %d clientes", total);
-
-        printf("\n\n**Importes registrados:");
-
-        for(int j = 0; j < cont_clientes; j++)
+        else if (clientes[i].tipoCliente == 2)
         {
-            if(clientes[j].tipoCliente == 1)
-            {
-                impnormal += habitaciones[j].precioNoche;
-            }
-            else if(clientes[j].tipoCliente == 2)
-            {
-                impvip += habitaciones[j].precioNoche;
-            }
-            else if(clientes[j].tipoCliente == 3)
-            {
-                impempresa += habitaciones[j].precioNoche;
-            }
-            imptotal += habitaciones[j].precioNoche;
+            vip += 1;
         }
+        else if (clientes[i].tipoCliente == 3)
+        {
+            empresa += 1;
+        }
+        total += 1;
+    }
+    printf("\n\t **Clientes Normales: %d", normal);
+    printf("\n\t **Clientes VIP: %d", vip);
+    printf("\n\t **Clientes Empresa: %d", empresa);
+    printf("\n\t **Total: %d clientes", total);
 
-        printf("\n\t **Normal: %.2f €", impnormal);
-        printf("\n\t **VIP: %.2f €", impvip);
-        printf("\n\t **Empresa: %.2f €", impempresa);
-        printf("\n\t **Total: %.2f €", imptotal);
-        printf("\n\n\n");
+    printf("\n\n**Importes registrados:");
 
-        system("pause");
+    for (int j = 0; j < cont_clientes; j++)
+    {
+        if (clientes[j].tipoCliente == 1)
+        {
+            impnormal += habitaciones[j].precioNoche;
+        }
+        else if (clientes[j].tipoCliente == 2)
+        {
+            impvip += habitaciones[j].precioNoche;
+        }
+        else if (clientes[j].tipoCliente == 3)
+        {
+            impempresa += habitaciones[j].precioNoche;
+        }
+        imptotal += habitaciones[j].precioNoche;
+    }
+
+    printf("\n\t **Normal: %.2f €", impnormal);
+    printf("\n\t **VIP: %.2f €", impvip);
+    printf("\n\t **Empresa: %.2f €", impempresa);
+    printf("\n\t **Total: %.2f €", imptotal);
+    printf("\n\n\n");
+
+    system("pause");
 }
