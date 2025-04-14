@@ -15,6 +15,8 @@
 #include <math.h>
 #include <ctype.h>
 #include <time.h>
+#include <fcntl.h>
+#include <io.h>
 
 #define MAX_CLIENTES 100
 #define MAX_HABITACIONES 50
@@ -66,11 +68,13 @@ void consultarReservasCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clie
 void listadoGeneralReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int cont_reservas);
 
 void informeMensualPorCategoriaCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones);
-// void informeMensualOcupacionHabitaciones();
-// void informeMensualIngresosReservas();
+void informeMensualOcupacionHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones);
+void informeMensualIngresosReservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10], tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, int cont_reservas);
 
 int main()
 {
+    int opcion, cont_habitaciones = 0, cont_clientes = 0, cont_reservas = 0;
+
     tReg_Cliente clientes[MAX_CLIENTES];            // registro de clientes
     tReg_Habitacion habitaciones[MAX_HABITACIONES]; // registro de habitaciones
 
@@ -83,8 +87,6 @@ int main()
             reservas[i][j][0] = '\0'; // Marca la celda como vacía
         }
     }
-
-    int opcion, cont_habitaciones = 0, cont_clientes = 0, cont_reservas = 0;
 
     setlocale(LC_ALL, "spanish");
 
@@ -280,50 +282,6 @@ void gestionReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tRe
         }
     } while (opcion != 0);
 }
-/*
-void informesEconomicos()
-{
-    int opcion;
-    do
-    {
-        system("cls");
-        printf("\nINFORMES ECONÓMICOS");
-        printf("\n----------------------------------");
-        printf("\n\t 1.- Informe mensual por categoría de cliente\n");
-        printf("\n\t 2.- Informe mensual de ocupación de habitaciones\n");
-        printf("\n\t 3.- Informe mensual de ingresos por reservas\n");
-        printf("\n\t 0.- Volver al menú principal\n\n\n");
-        printf("\n Elija opción: ");
-        scanf("%d", &opcion);
-
-        switch (opcion)
-        {
-        case 1:
-            informeMensualCategoriaCliente();
-            system("cls");
-            break;
-
-        case 2:
-            informeMensualOcupacionHabitaciones();
-            system("cls");
-            break;
-
-        case 3:
-            informeMensualIngresosReservas();
-            system("cls");
-            break;
-
-        case 0:
-            system("cls");
-            return;
-
-        default:
-            printf("Por favor, introduzca una opción válida.\n\n");
-            system("pause");
-            break;
-        }
-    } while (opcion != 0);
-}*/
 
 void altaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
 {
@@ -1111,10 +1069,10 @@ void informesEconomicos(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, 
             informeMensualPorCategoriaCliente(clientes, cont_clientes, habitaciones, cont_habitaciones);
             break;
         case 2:
-            // informeMensualOcupacionHabitaciones();
+            informeMensualOcupacionHabitaciones(habitaciones, cont_habitaciones);
             break;
         case 3:
-            // informeMensualIngresosReservas();
+            informeMensualIngresosReservas(reservas, habitaciones, cont_habitaciones, cont_clientes);
             break;
         case 0:
             break;
@@ -1183,4 +1141,181 @@ void informeMensualPorCategoriaCliente(tReg_Cliente clientes[MAX_CLIENTES], int 
     printf("\n\n\n");
 
     system("pause");
+}
+
+void informeMensualOcupacionHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones)
+{
+    // total de habitaciones, ocupadas, libres, porcentaje de ocupación
+
+    system("cls");
+    printf("INFORME MENSUAL (Ocupación de Habitaciones)");
+    printf("\n-----------------------------------------------\n");
+
+    printf("\n\t Total de habitaciones: %d", MAX_HABITACIONES);
+    printf("\n\t Habitaciones ocupadas: %d", cont_habitaciones);
+    printf("\n\t Habitaciones libres: %d", MAX_HABITACIONES - cont_habitaciones);
+    printf("\n Porcentaje de ocupación: %.2f%%", ((float)cont_habitaciones / MAX_HABITACIONES) * 100);
+    printf("\n\n\n");
+    system("pause");
+}
+
+void informeMensualIngresosReservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10], tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, int cont_reservas)
+{
+    // numero total de reservas e ingreso total de las reservas realizadas hasta el momento:
+
+    system("cls");
+    printf("INFORME MENSUAL (Ingresos por Reservas)");
+    printf("\n-----------------------------------------------\n");
+
+    printf("\n Numero total de reservas: %d", cont_reservas);
+    // calcular el ingreso total de las reservas:
+
+    float ingresoTotal = 0.0;
+
+    for (int i = 0; i < MAX_DIAS; i++)
+    {
+        for (int j = 0; j < cont_habitaciones; j++)
+        {
+            if (reservas[i][j][0] != '\0')
+            {
+                ingresoTotal += habitaciones[j].precioNoche;
+            }
+        }
+    }
+    printf("\n Ingreso total: %.2f €", ingresoTotal);
+
+    printf("\n\n\n");
+    system("pause");
+}
+
+// cargo al programa los clientes del fichero clientes.dat
+void cargarClientes(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
+{
+    FILE *fichero;
+    fichero = fopen("clientes.dat", "rb");
+
+    if (fichero == NULL)
+    {
+        printf("Error al abrir el fichero\n");
+        return;
+    }
+
+    while (fread(&clientes[*cont_clientes], sizeof(tReg_Cliente), 1, fichero) == 1 && *cont_clientes < MAX_CLIENTES)
+    {
+        (*cont_clientes)++;
+    }
+
+    fclose(fichero);
+}
+
+void ficheroclientes(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
+{
+    FILE *fichero;
+    fichero = fopen("clientes.dat", "ab+");
+
+    if (fichero == NULL)
+    {
+        printf("Error al abrir el fichero\n");
+        return;
+    }
+
+    for (int i = 0; i < cont_clientes; i++)
+    {
+        fwrite(&clientes[i], sizeof(tReg_Cliente), 1, fichero);
+    }
+    fclose(fichero);
+}
+
+void cargarHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones)
+{
+    FILE *fichero;
+    fichero = fopen("habitaciones.dat", "rb");
+
+    if (fichero == NULL)
+    {
+        printf("Error al abrir el fichero\n");
+        return;
+    }
+
+    while (fread(&habitaciones[*cont_habitaciones], sizeof(tReg_Habitacion), 1, fichero) == 1 && *cont_habitaciones < MAX_HABITACIONES)
+    {
+        (*cont_habitaciones)++;
+    }
+
+    fclose(fichero);
+}
+
+void ficherohabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones)
+{
+    FILE *fichero;
+    fichero = fopen("habitaciones.dat", "ab+");
+
+    if (fichero == NULL)
+    {
+        printf("Error al abrir el fichero\n");
+        return;
+    }
+
+    for (int i = 0; i < cont_habitaciones; i++)
+    {
+        fwrite(&habitaciones[i], sizeof(tReg_Habitacion), 1, fichero);
+    }
+    fclose(fichero);
+}
+
+void cargarReservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_reservas)
+{
+    FILE *fichero;
+    fichero = fopen("reservas.dat", "rb");
+
+    if (fichero == NULL)
+    {
+        printf("Error al abrir el fichero\n");
+        return;
+    }
+
+    while (fread(&reservas[*cont_reservas], sizeof(reservas), 1, fichero) == 1 && *cont_reservas < MAX_DIAS)
+    {
+        (*cont_reservas)++;
+    }
+
+    fclose(fichero);
+}
+
+void ficheroreservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10], int cont_reservas)
+{
+    FILE *fichero;
+    fichero = fopen("reservas.dat", "ab+");
+
+    if (fichero == NULL)
+    {
+        printf("Error al abrir el fichero\n");
+        return;
+    }
+
+    for (int i = 0; i < cont_reservas; i++)
+    {
+        fwrite(&reservas[i], sizeof(reservas), 1, fichero);
+    }
+    fclose(fichero);
+}
+
+// importar habitaciones nuevas desde un fichero de texto
+void habitacionesNuevas(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones)
+{
+    FILE *fichero;
+    fichero = fopen("habitacionesNuevas.txt", "r");
+
+    if (fichero == NULL)
+    {
+        printf("Error al abrir el fichero\n");
+        return;
+    }
+
+    while (fscanf(fichero, "%s %d %f", habitaciones[*cont_habitaciones].codigo, &habitaciones[*cont_habitaciones].tipoHabitacion, &habitaciones[*cont_habitaciones].precioNoche) == 3 && *cont_habitaciones < MAX_HABITACIONES)
+    {
+        (*cont_habitaciones)++;
+    }
+
+    fclose(fichero);
 }

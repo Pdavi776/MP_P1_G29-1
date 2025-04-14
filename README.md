@@ -29,5 +29,19 @@ no imprime el nombre, apellidos, ni tipo:
 
  6.- Listado por categorÃ­a no funciona
 
+## subprogramas que faltan:
+
+ importar habitaciones desde fichero: para habitaciones nuevas desde un fichero de texto.txt
+
+
+## Ficheros:
+ cliente.dat
+ habitaciones.dat
+ reservas.dat
+ totalGlobalHotel.dat
+ habitacionesNuevas.txt
+ bajaHcoClientes.txt
+ bajaHcoHabitaciones.txt
+ cancelacionHcoReservas.txt
  
 
