@@ -1188,6 +1188,9 @@ void informeMensualIngresosReservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10
     system("pause");
 }
 
+void importarHabitacionesDesdeFichero(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones){
+    habitacionesNuevas(habitaciones, &cont_habitaciones);
+}
 // cargo al programa los clientes del fichero clientes.dat
 void cargarClientes(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
 {
@@ -1301,21 +1304,66 @@ void ficheroreservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10], int cont_res
 }
 
 // importar habitaciones nuevas desde un fichero de texto
-void habitacionesNuevas(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones)
-{
+void habitacionesNuevas(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones) {
     FILE *fichero;
+    char linea[100];
+    char nombreTipo[50];
+    float precio;
+    int tipoHabitacion;
+
     fichero = fopen("habitacionesNuevas.txt", "r");
 
-    if (fichero == NULL)
-    {
+    if (fichero == NULL) {
         printf("Error al abrir el fichero\n");
         return;
     }
 
-    while (fscanf(fichero, "%s %d %f", habitaciones[*cont_habitaciones].codigo, &habitaciones[*cont_habitaciones].tipoHabitacion, &habitaciones[*cont_habitaciones].precioNoche) == 3 && *cont_habitaciones < MAX_HABITACIONES)
-    {
+    while (fgets(linea, sizeof(linea), fichero) != NULL && *cont_habitaciones < MAX_HABITACIONES) {
+        //leer cadena de caracteres hasta encontrar el separador #, luego espera un numero float
+        if (sscanf(linea, "%[^#]#%f", nombreTipo, &precio) != 2) { 
+            printf("Error al leer la línea: %s\n", linea);
+            continue;
+        }
+
+        // Determinar el tipo de habitación según el nombre qeu hemos introducido en el fichero
+        if (strcmp(nombreTipo, "Individual") == 0) {
+            tipoHabitacion = 1;
+        } else if (strcmp(nombreTipo, "Doble") == 0) {
+            tipoHabitacion = 2;
+        } else if (strcmp(nombreTipo, "Suite") == 0) {
+            tipoHabitacion = 3;
+        } else {
+            printf("Tipo de habitación no válido: %s\n", nombreTipo);
+            continue;
+        }
+
+        // Generar el código de la habitación automaticamente con el contador usado para las habitaciones de la forma "HAB001", "HAB002", etc.
+        char codigo[7];
+        //con esto escribo una cadena con formato en el buffer creado, en este caso "codigo"
+        snprintf(codigo, sizeof(codigo), "HAB%03d", *cont_habitaciones + 1);
+
+        // Comprobar si ya existe una habitación con el mismo código
+        int existe = 0;
+        for (int i = 0; i < *cont_habitaciones; i++) {
+            if (strcmp(habitaciones[i].codigo, codigo) == 0) {
+                existe = 1;
+                break;
+            }
+        }
+
+        if (existe) {
+            printf("La habitación con código %s ya existe. No se añadirá.\n", codigo);
+            continue;
+        }
+
+        // Añadir la nueva habitación al array
+        strcpy(habitaciones[*cont_habitaciones].codigo, codigo);
+        habitaciones[*cont_habitaciones].tipoHabitacion = tipoHabitacion;
+        habitaciones[*cont_habitaciones].precioNoche = precio;
         (*cont_habitaciones)++;
     }
 
     fclose(fichero);
+    printf("Habitaciones nuevas importadas correctamente.\n");
 }
+
