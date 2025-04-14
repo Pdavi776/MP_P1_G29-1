@@ -6,6 +6,7 @@
  * Alumno 2: <David Montero Esteban>
  * Grupo de laboratorio: <29_1>
  * Fecha: <24/02/2025>
+ * FechaFin:
  ******************************************/
 
 #include <stdio.h>
@@ -15,8 +16,6 @@
 #include <math.h>
 #include <ctype.h>
 #include <time.h>
-#include <fcntl.h>
-#include <io.h>
 
 #define MAX_CLIENTES 100
 #define MAX_HABITACIONES 50
@@ -41,24 +40,28 @@ typedef struct
 } tReg_Habitacion;
 
 void mensajeBienvenida();
+
+void validardni(char dni[10]);
+int buscarcliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, char dni[10]);
+int buscarHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char codigo[7]);
+void buscarTipoCliente(int tipo);
+
 void gestionClientes(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes);
 void gestionHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones);
 void gestionReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_reservas);
 void informesEconomicos(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10]);
-// void importarHabitaciones();
-int buscarcliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, char dni[10]);
+void importarHabitacionesDesdeFichero(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones);
 
 void altaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes);
 void bajaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes);
 void modificarCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes);
 void consultaCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes);
 void listadoGeneralClientes(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes);
-// void listadoPorCategoria(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes);
+void listadoPorCategoria(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes);
 
 void altaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones);
 void bajaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones);
 void modificarHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones);
-int buscarHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char codigo[7]);
 void consultaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones);
 void listadoGeneralHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones);
 
@@ -67,9 +70,19 @@ void cancelarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tRe
 void consultarReservasCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10]);
 void listadoGeneralReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int cont_reservas);
 
-void informeMensualPorCategoriaCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones);
-void informeMensualOcupacionHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones);
+void informeMensualPorCategoriaCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES]);
+void informeMensualOcupacionHabitaciones(int cont_habitaciones);
 void informeMensualIngresosReservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10], tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, int cont_reservas);
+
+void cargarClientes(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes);
+void cargarHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones);
+void cargarReservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_reservas);
+void cargarContadores(int *cont_clientes, int *cont_habitaciones, int *cont_reservas);
+
+void ficheroclientes(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes);
+void ficherohabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones);
+void ficheroreservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10], int cont_reservas);
+void contadores(int cont_clientes, int cont_habitaciones, int cont_reservas);
 
 int main()
 {
@@ -90,6 +103,10 @@ int main()
 
     setlocale(LC_ALL, "spanish");
 
+    cargarContadores(&cont_clientes, &cont_habitaciones, &cont_reservas);
+    cargarClientes(clientes, &cont_clientes);
+    cargarHabitaciones(habitaciones, &cont_habitaciones);
+    cargarReservas(reservas, &cont_reservas);
     mensajeBienvenida();
 
     do
@@ -117,10 +134,10 @@ int main()
             gestionReservas(clientes, cont_clientes, habitaciones, cont_habitaciones, reservas, &cont_reservas);
             break;
         case 4:
-            // informesEconomicos();
+            informesEconomicos(clientes, cont_clientes, habitaciones, cont_habitaciones, reservas);
             break;
         case 5:
-            // importarHabitaciones();
+            importarHabitacionesDesdeFichero(habitaciones, &cont_habitaciones);
             break;
         case 0:
             break;
@@ -130,6 +147,11 @@ int main()
             break;
         }
     } while (opcion != 0);
+
+    ficheroclientes(clientes, cont_clientes);
+    ficherohabitaciones(habitaciones, cont_habitaciones);
+    ficheroreservas(reservas, cont_reservas);
+    contadores(cont_clientes, cont_habitaciones, cont_reservas);
 
     return 0;
 }
@@ -179,7 +201,7 @@ void gestionClientes(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
             listadoGeneralClientes(clientes, *cont_clientes);
             break;
         case 6:
-            // listadoPorCategoria(clientes, *cont_clientes);
+            listadoPorCategoria(clientes, *cont_clientes);
             break;
         case 0:
             break;
@@ -285,48 +307,45 @@ void gestionReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tRe
 
 void altaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
 {
-    char resp;
-    int valido;
+    char resp, dni[10];
 
     do
     {
-        do
+
+        system("cls");
+        printf("ALTA DE CLIENTE");
+        printf("\n----------------------------------");
+        printf("\nIntroduce los siguientes datos del cliente %d:", *cont_clientes + 1);
+
+        printf("\nDNI: "); // validacion
+        scanf("%s", dni);
+
+        validardni(dni);
+
+        int buscador = buscarcliente(clientes, *cont_clientes, dni);
+
+        if (buscador != -1)
         {
-            valido = 1;
+            printf("\nERROR: DNI ya registrado. Inserte un DNI válido...\n");
+            system("pause");
+        }
 
-            system("cls");
-            printf("ALTA DE CLIENTE");
-            printf("\n----------------------------------");
-            printf("\nIntroduce los siguientes datos del cliente %d:", *cont_clientes + 1);
+        fflush(stdin);
+        strcpy(clientes[*cont_clientes].dni, dni);
 
-            printf("\nDNI: "); // validacion
-            scanf("%s", clientes[*cont_clientes].dni);
-
-            for (int i = 0; i < *cont_clientes; i++) // buscar
-            {
-                if (strcmp(clientes[i].dni, clientes[*cont_clientes].dni) == 0)
-                {
-                    printf("\nERROR: DNI ya registrado. Inserte un DNI válido...\n");
-                    system("pause");
-                    valido = 0;
-                    break;
-                }
-            }
-        } while (valido == 0);
-
-        printf("\nNOMBRE: ");
+        printf("NOMBRE: ");
         fflush(stdin);
         fgets(clientes[*cont_clientes].nombre, MAX_LONGITUD, stdin);
         strtok(clientes[*cont_clientes].nombre, "\n");
 
-        printf("\nAPELLIDOS: ");
+        printf("APELLIDOS: ");
         fflush(stdin);
         fgets(clientes[*cont_clientes].apellidos, MAX_LONGITUD, stdin);
         strtok(clientes[*cont_clientes].apellidos, "\n");
 
         do
         {
-            printf("\nTIPO (1.- Normal)(2.- VIP)(3.- Empresa): ");
+            printf("TIPO (1.- Normal)(2.- VIP)(3.- Empresa): ");
             scanf("%d", &clientes[*cont_clientes].tipoCliente);
 
             if ((clientes[*cont_clientes].tipoCliente != 1) && (clientes[*cont_clientes].tipoCliente != 2) && (clientes[*cont_clientes].tipoCliente != 3))
@@ -348,7 +367,7 @@ void altaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
 }
 
 void bajaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
-{
+{ // almacenarlo en un fichero de texto con lo siguiente: Nombre completo del cliente – DNI – Tipo Cliente
     char dni[10], resp;
     int posicion;
 
@@ -369,6 +388,15 @@ void bajaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
         }
         else
         {
+            FILE *fichero = fopen("bajaHcoClientes.txt", "a");
+            if (fichero == NULL)
+            {
+                printf("Error al abrir el fichero de baja de clientes.\n");
+                return;
+            }
+            fprintf(fichero, "%s %s-%s-%d\n", clientes[posicion].nombre, clientes[posicion].apellidos, clientes[posicion].dni, clientes[posicion].tipoCliente);
+            fclose(fichero);
+
             for (int i = posicion; i < *cont_clientes - 1; i++)
             {
                 clientes[i] = clientes[i + 1];
@@ -397,7 +425,6 @@ int buscarcliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, char d
     return -1;
 }
 
-// no se si está terminado
 void consultaCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
 {
     char dni[10];
@@ -422,7 +449,7 @@ void consultaCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
         printf("\nApellidos: %s", clientes[posicion].apellidos);
         printf("\nDNI: %s", clientes[posicion].dni);
         printf("\nTipo de cliente: %d", clientes[posicion].tipoCliente);
-        printf("\nHabitaciones reservadas: %d", clientes[posicion].habReservadas);
+        printf("\nHabitaciones reservadas: %d\n\n", clientes[posicion].habReservadas);
     }
     system("pause");
 }
@@ -430,7 +457,7 @@ void consultaCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
 void modificarCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
 {
     int posicion, opcion;
-    char dni[10], resp;
+    char dni[10], resp, tipo[20];
 
     do
     {
@@ -451,10 +478,25 @@ void modificarCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
 
         printf("\nInformación actual del cliente:");
 
+        switch (clientes[posicion].tipoCliente)
+        {
+        case 1:
+            strcpy(tipo, "Normal");
+            break;
+        case 2:
+            strcpy(tipo, "VIP");
+            break;
+        case 3:
+            strcpy(tipo, "Empresa");
+            break;
+        default:
+            break;
+        }
+
         printf("\n\nDNI: %s ", clientes[posicion].dni);
         printf("\nNombre: %s ", clientes[posicion].nombre);
         printf("\nApellidos: %s ", clientes[posicion].apellidos);
-        printf("\nTipo de cliente: %d", clientes[posicion].tipoCliente);
+        printf("\nTipo de cliente: %s", tipo);
         printf("\nHabitaciones reservadas: %d", clientes[posicion].habReservadas);
 
         printf("\n\nElija la informacion que desea modificar...\n<Excepto dni y habitaciones reservadas>\n(1.-Nombre, 2.-Apellidos, 3.-Tipo, 4.-Todo): ");
@@ -573,36 +615,87 @@ void listadoGeneralClientes(tReg_Cliente clientes[MAX_CLIENTES], int cont_client
     system("pause");
 }
 
+void listadoPorCategoria(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
+{
+    int categoria, totalnormal, totalvip, totalempresa;
+
+    system("cls");
+    printf("LISTADO POR CATEGORÍA DE CLIENTES");
+    printf("\n--------------------------------------------------");
+    printf("Introduce la categoría a listar (1.- Normal)(2.- VIP)(3.- Empresa): ");
+    scanf("%d", &categoria);
+
+    switch (categoria)
+    {
+    case 1:
+        system("cls");
+        printf("LISTADO DE CLIENTES - Categoría Normal");
+        printf("\n--------------------------------------------------");
+        printf("\n\t  Nombre y apellidos\t\tDNI");
+
+        for (int i = 0; i < cont_clientes; i++)
+        {
+            if (clientes[i].tipoCliente == 1)
+            {
+                printf("\n\t%s %s\t\t%s", clientes[i].nombre, clientes[i].apellidos, clientes[i].dni);
+                totalnormal++;
+            }
+        }
+        printf("\nTOTAL: %d cliente normal", totalnormal);
+        printf("\n\n\n");
+        system("pause");
+        break;
+    case 2:
+        system("cls");
+        printf("LISTADO DE CLIENTES - Categoría VIP");
+        printf("\n--------------------------------------------------");
+
+        for (int j = 0; j < cont_clientes; j++)
+        {
+            if (clientes[j].tipoCliente == 2)
+            {
+                printf("\n\t%s %s\t\t%s", clientes[j].nombre, clientes[j].apellidos, clientes[j].dni);
+                totalvip++;
+            }
+        }
+        printf("\nTOTAL: %d cliente VIP", totalvip);
+        printf("\n\n\n");
+        system("pause");
+        break;
+    case 3:
+        system("cls");
+        printf("LISTADO DE CLIENTES - Categoría Empresa");
+        printf("\n--------------------------------------------------");
+
+        for (int k = 0; k < cont_clientes; k++)
+        {
+            if (clientes[k].tipoCliente == 3)
+            {
+                printf("\n\t%s %s\t\t%s", clientes[k].nombre, clientes[k].apellidos, clientes[k].dni);
+                totalempresa++;
+            }
+        }
+        printf("\nTOTAL: %d cliente Empresa", totalempresa);
+        printf("\n\n\n");
+        system("pause");
+        break;
+
+    default:
+        break;
+    }
+}
+
 void altaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones)
 {
     char resp;
-    int valido;
 
     do
     {
-        do
-        {
-            valido = 1;
 
-            system("cls");
-            printf("ALTA DE HABITACIÓN");
-            printf("\n----------------------------------");
-            printf("\nIntroduce los siguientes datos de la habitación %d:", *cont_habitaciones + 1);
-
-            printf("\nCÓDIGO: ");
-            scanf("%s", habitaciones[*cont_habitaciones].codigo);
-
-            for (int i = 0; i < *cont_habitaciones; i++)
-            {
-                if (strcmp(habitaciones[i].codigo, habitaciones[*cont_habitaciones].codigo) == 0)
-                {
-                    printf("\nERROR: Código ya registrado. Inserte un código válido...\n");
-                    system("pause");
-                    valido = 0;
-                    break;
-                }
-            }
-        } while (valido == 0);
+        system("cls");
+        printf("ALTA DE HABITACIÓN");
+        printf("\n----------------------------------");
+        printf("\nIntroduce los siguientes datos de la habitación %d:", *cont_habitaciones + 1);
 
         do
         {
@@ -628,6 +721,14 @@ void altaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_ha
             }
         } while (habitaciones[*cont_habitaciones].precioNoche < 0);
 
+        //hacer codigo automatico para asignar a cada habitación registrada
+
+        char codigo[7];
+        // con esto escribo una cadena con formato en el buffer creado, en este caso "codigo"
+        snprintf(codigo, sizeof(codigo), "HAB%03d", *cont_habitaciones + 1);
+
+        strcpy(habitaciones[*cont_habitaciones].codigo, codigo);
+
         (*cont_habitaciones)++;
 
         printf("\n\n ¿Desea seguir dandod de alta habitaciones? (Y/N)");
@@ -640,7 +741,7 @@ void altaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_ha
 
 void bajaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones)
 {
-    char codigo[7], resp;
+    char codigo[7], resp, tipo[20], fecha[11];
     int posicion;
 
     do
@@ -660,6 +761,36 @@ void bajaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_ha
         }
         else
         {
+            // Obtener la fecha actual en formato DD/MM/AAAA
+            time_t t = time(NULL);
+            struct tm *tm_info = localtime(&t);
+            strftime(fecha, sizeof(fecha), "%d/%m/%Y", tm_info);
+
+            // Determinar el tipo de habitación
+            if (habitaciones[posicion].tipoHabitacion == 1)
+            {
+                strcpy(tipo, "Individual");
+            }
+            else if (habitaciones[posicion].tipoHabitacion == 2)
+            {
+                strcpy(tipo, "Doble");
+            }
+            else if (habitaciones[posicion].tipoHabitacion == 3)
+            {
+                strcpy(tipo, "Suite");
+            }
+
+            // Guardar la baja en el fichero
+            FILE *fichero = fopen("bajaHcoHabitaciones.txt", "a");
+            if (fichero == NULL)
+            {
+                printf("Error al abrir el fichero de baja de habitaciones.\n");
+                return;
+            }
+            fprintf(fichero, "%s-%s-%s\n", habitaciones[posicion].codigo, tipo, fecha);
+            fclose(fichero);
+
+            // Eliminar la habitación del array
             for (int i = posicion; i < *cont_habitaciones - 1; i++)
             {
                 habitaciones[i] = habitaciones[i + 1];
@@ -668,8 +799,8 @@ void bajaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_ha
             printf("\nHabitación dada de baja correctamente.\n");
         }
 
-        printf("\n\n ¿Desea seguir dando de baja habitaciones? (Y/N)");
-        scanf("%c", &resp);
+        printf("\n\n ¿Desea seguir dando de baja habitaciones? (Y/N): ");
+        scanf(" %c", &resp);
 
     } while (posicion == -1 || resp == 'y' || resp == 'Y');
 }
@@ -915,8 +1046,7 @@ void cancelarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tRe
 {
     char dni[10];
     int posicionCliente, reservasEliminadas = 0;
-
-    // time_t tiempo actual, meter arriba una variable y esto sirve para los ficheros
+    char fecha[11];
 
     system("cls");
     printf("CANCELAR RESERVA");
@@ -924,7 +1054,7 @@ void cancelarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tRe
     printf("\nIntroduce el DNI del cliente: ");
     scanf("%s", dni);
 
-    // validardni(); // Validar el DNI con el subprograma indicado
+    validardni(dni); // Validar el DNI con el subprograma indicado
 
     posicionCliente = buscarcliente(clientes, cont_clientes, dni);
 
@@ -935,14 +1065,32 @@ void cancelarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tRe
         return;
     }
 
+    time_t t = time(NULL);
+    struct tm *tm_info = localtime(&t);
+    strftime(fecha, sizeof(fecha), "%d/%m/%Y", tm_info);
+
     // Cancelar la reserva
     for (int i = 0; i < MAX_DIAS; i++)
     {
-        for (int j = 0; j < MAX_HABITACIONES; j++)
+        for (int j = 0; j < cont_habitaciones; j++)
         {
             if (strcmp(reservas[i][j], dni) == 0)
             {
-                reservas[i][j][0] = '\0'; // Eliminar la reserva
+                // antes de eliminarlo lo meto a un fichero con el tipo: DNI – Códigos de habitaciones – Fecha de cancelación
+                FILE *fichero = fopen("cancelacionHcoReservas.txt", "a");
+
+                if (fichero == NULL)
+                {
+                    printf("Error al abrir el fichero de cancelación de reservas.\n");
+                    fclose(fichero);
+                    return;
+                }
+                fprintf(fichero, "%s-%s-%s\n", dni, habitaciones[j].codigo, fecha);
+
+                fclose(fichero);
+
+                // Eliminar la reserva
+                reservas[i][j][0] = '\0';
                 reservasEliminadas++;
 
                 if (*cont_reservas > 0)
@@ -1066,10 +1214,10 @@ void informesEconomicos(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, 
         switch (opcion)
         {
         case 1:
-            informeMensualPorCategoriaCliente(clientes, cont_clientes, habitaciones, cont_habitaciones);
+            informeMensualPorCategoriaCliente(clientes, cont_clientes, habitaciones);
             break;
         case 2:
-            informeMensualOcupacionHabitaciones(habitaciones, cont_habitaciones);
+            informeMensualOcupacionHabitaciones(cont_habitaciones);
             break;
         case 3:
             informeMensualIngresosReservas(reservas, habitaciones, cont_habitaciones, cont_clientes);
@@ -1085,10 +1233,10 @@ void informesEconomicos(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, 
     } while (opcion != 0);
 }
 
-void informeMensualPorCategoriaCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones)
+void informeMensualPorCategoriaCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES])
 {
-    int total, normal, vip, empresa;
-    float impnormal, impvip, impempresa, imptotal;
+    int total = 0, normal = 0, vip = 0, empresa = 0;
+    float impnormal = 0.0, impvip = 0.0, impempresa = 0.0, imptotal = 0.0;
     system("cls");
     printf("INFORME MENSUAL (por Categorías de Cliente)\n");
     printf("-----------------------------------------------\n");
@@ -1143,7 +1291,7 @@ void informeMensualPorCategoriaCliente(tReg_Cliente clientes[MAX_CLIENTES], int 
     system("pause");
 }
 
-void informeMensualOcupacionHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones)
+void informeMensualOcupacionHabitaciones(int cont_habitaciones)
 {
     // total de habitaciones, ocupadas, libres, porcentaje de ocupación
 
@@ -1188,9 +1336,6 @@ void informeMensualIngresosReservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10
     system("pause");
 }
 
-void importarHabitacionesDesdeFichero(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones){
-    habitacionesNuevas(habitaciones, &cont_habitaciones);
-}
 // cargo al programa los clientes del fichero clientes.dat
 void cargarClientes(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
 {
@@ -1277,7 +1422,7 @@ void cargarReservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_res
         return;
     }
 
-    while (fread(&reservas[*cont_reservas], sizeof(reservas), 1, fichero) == 1 && *cont_reservas < MAX_DIAS)
+    while (fread(reservas, sizeof(char) * MAX_DIAS * MAX_HABITACIONES * 10, 1, fichero) == 1 && *cont_reservas < MAX_DIAS)
     {
         (*cont_reservas)++;
     }
@@ -1298,13 +1443,14 @@ void ficheroreservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10], int cont_res
 
     for (int i = 0; i < cont_reservas; i++)
     {
-        fwrite(&reservas[i], sizeof(reservas), 1, fichero);
+        fwrite(&reservas[i], sizeof(char) * MAX_HABITACIONES * 10, 1, fichero);
     }
     fclose(fichero);
 }
 
 // importar habitaciones nuevas desde un fichero de texto
-void habitacionesNuevas(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones) {
+void importarHabitacionesDesdeFichero(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones)
+{
     FILE *fichero;
     char linea[100];
     char nombreTipo[50];
@@ -1313,45 +1459,58 @@ void habitacionesNuevas(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *con
 
     fichero = fopen("habitacionesNuevas.txt", "r");
 
-    if (fichero == NULL) {
+    if (fichero == NULL)
+    {
         printf("Error al abrir el fichero\n");
         return;
     }
 
-    while (fgets(linea, sizeof(linea), fichero) != NULL && *cont_habitaciones < MAX_HABITACIONES) {
-        //leer cadena de caracteres hasta encontrar el separador #, luego espera un numero float
-        if (sscanf(linea, "%[^#]#%f", nombreTipo, &precio) != 2) { 
+    while (fgets(linea, sizeof(linea), fichero) != NULL && *cont_habitaciones < MAX_HABITACIONES)
+    {
+        // leer cadena de caracteres hasta encontrar el separador #, luego espera un numero float
+        if (sscanf(linea, "%[^#]#%f", nombreTipo, &precio) != 2)
+        {
             printf("Error al leer la línea: %s\n", linea);
             continue;
         }
 
         // Determinar el tipo de habitación según el nombre qeu hemos introducido en el fichero
-        if (strcmp(nombreTipo, "Individual") == 0) {
+        if (strcmp(nombreTipo, "Individual") == 0)
+        {
             tipoHabitacion = 1;
-        } else if (strcmp(nombreTipo, "Doble") == 0) {
+        }
+        else if (strcmp(nombreTipo, "Doble") == 0)
+        {
             tipoHabitacion = 2;
-        } else if (strcmp(nombreTipo, "Suite") == 0) {
+        }
+        else if (strcmp(nombreTipo, "Suite") == 0)
+        {
             tipoHabitacion = 3;
-        } else {
+        }
+        else
+        {
             printf("Tipo de habitación no válido: %s\n", nombreTipo);
             continue;
         }
 
         // Generar el código de la habitación automaticamente con el contador usado para las habitaciones de la forma "HAB001", "HAB002", etc.
         char codigo[7];
-        //con esto escribo una cadena con formato en el buffer creado, en este caso "codigo"
+        // con esto escribo una cadena con formato en el buffer creado, en este caso "codigo"
         snprintf(codigo, sizeof(codigo), "HAB%03d", *cont_habitaciones + 1);
 
         // Comprobar si ya existe una habitación con el mismo código
         int existe = 0;
-        for (int i = 0; i < *cont_habitaciones; i++) {
-            if (strcmp(habitaciones[i].codigo, codigo) == 0) {
+        for (int i = 0; i < *cont_habitaciones; i++)
+        {
+            if (strcmp(habitaciones[i].codigo, codigo) == 0)
+            {
                 existe = 1;
                 break;
             }
         }
 
-        if (existe) {
+        if (existe)
+        {
             printf("La habitación con código %s ya existe. No se añadirá.\n", codigo);
             continue;
         }
@@ -1364,6 +1523,60 @@ void habitacionesNuevas(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *con
     }
 
     fclose(fichero);
-    printf("Habitaciones nuevas importadas correctamente.\n");
+    printf("\n\nHabitaciones nuevas importadas correctamente.\n");
+    system("pause");
 }
 
+void contadores(int cont_clientes, int cont_habitaciones, int cont_reservas)
+{ // guardo los contadores en el fichero al final del programa
+    FILE *fichero;
+    fichero = fopen("totalGlobalHotel.dat", "wb");
+
+    if (fichero == NULL)
+    {
+        printf("Error al abrir el fichero\n");
+        return;
+    }
+
+    fwrite(&cont_clientes, sizeof(int), 1, fichero);
+    fwrite(&cont_habitaciones, sizeof(int), 1, fichero);
+    fwrite(&cont_reservas, sizeof(int), 1, fichero);
+
+    fclose(fichero);
+}
+
+void cargarContadores(int *cont_clientes, int *cont_habitaciones, int *cont_reservas)
+{ // cargo los contadores al inicio del programa
+    FILE *fichero;
+    fichero = fopen("totalGlobalHotel.dat", "rb");
+
+    if (fichero == NULL)
+    {
+        printf("Error al abrir el fichero\n");
+        return;
+    }
+
+    fread(cont_clientes, sizeof(int), 1, fichero);
+    fread(cont_habitaciones, sizeof(int), 1, fichero);
+    fread(cont_reservas, sizeof(int), 1, fichero);
+
+    fclose(fichero);
+}
+
+void validardni(char dni[10])
+{
+    int valido = 0;
+    do
+    {
+        // Validar el DNI (aquí puedes implementar tu propia lógica de validación)
+        if (strlen(dni) == 9 && isdigit(dni[0]) && isdigit(dni[1]) && isdigit(dni[2]) && isdigit(dni[3]) && isdigit(dni[4]) && isdigit(dni[5]) && isdigit(dni[6]) && isdigit(dni[7]) && isalpha(dni[8]))
+        {
+            valido = 1;
+        }
+        else
+        {
+            printf("\nERROR: DNI no válido. Inserte un DNI válido...\n\n");
+            system("pause");
+        }
+    } while (valido == 0);
+}
