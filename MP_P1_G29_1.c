@@ -1,3 +1,4 @@
+
 /*******************************************
  * Asignatura: Metodología de la programación
  * Curso: 1
@@ -6,7 +7,6 @@
  * Alumno 2: <David Montero Esteban>
  * Grupo de laboratorio: <29_1>
  * Fecha: <24/02/2025>
- * FechaFin:
  ******************************************/
 
 #include <stdio.h>
@@ -156,12 +156,26 @@ int main()
     return 0;
 }
 
+// Subprograma: mensajeBienvenida
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: Ninguno
+// Parámetros de salida: Ninguno
+// Prerrequisitos: Ninguno
+// Objetivo: Mostrar un mensaje de bienvenida al usuario.
+
 void mensajeBienvenida()
 {
     system("cls");
     printf("\n\n\tBienvenido al programa GEST-HOTEL\n\n");
     system("pause");
 }
+
+// Subprograma: gestionClientes
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El array de clientes debe estar inicializado.
+// Objetivo: Gestionar las operaciones relacionadas con los clientes (alta, baja, modificación, consulta, etc.).
 
 void gestionClientes(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
 {
@@ -214,6 +228,13 @@ void gestionClientes(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
     } while (opcion != 0);
 }
 
+// Subprograma: gestionHabitaciones
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El array de habitaciones debe estar inicializado.
+// Objetivo: Gestionar las operaciones relacionadas con las habitaciones (alta, baja, modificación, consulta, etc.).
+
 void gestionHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones)
 {
     int opcion;
@@ -258,6 +279,19 @@ void gestionHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *co
         }
     } while (opcion != 0);
 }
+
+// Subprograma: gestionReservas
+// Tipo: Procedimiento (void)
+// Parámetros de entrada:
+//   - tReg_Cliente clientes[MAX_CLIENTES]
+//   - int cont_clientes
+//   - tReg_Habitacion habitaciones[MAX_HABITACIONES]
+//   - int cont_habitaciones
+//   - char reservas[MAX_DIAS][MAX_HABITACIONES][10]
+//   - int *cont_reservas
+// Parámetros de salida: Ninguno
+// Prerrequisitos: Los arrays de clientes, habitaciones y reservas deben estar inicializados.
+// Objetivo: Gestionar las operaciones relacionadas con las reservas (realizar, cancelar, consultar, etc.).
 
 void gestionReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_reservas)
 {
@@ -305,6 +339,13 @@ void gestionReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tRe
     } while (opcion != 0);
 }
 
+// Subprograma: altaCliente
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El array de clientes debe estar inicializado y no debe superar el límite MAX_CLIENTES.
+// Objetivo: Dar de alta un nuevo cliente en el sistema.
+
 void altaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
 {
     char resp, dni[10];
@@ -316,9 +357,6 @@ void altaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
         printf("ALTA DE CLIENTE");
         printf("\n----------------------------------");
         printf("\nIntroduce los siguientes datos del cliente %d:", *cont_clientes + 1);
-
-        printf("\nDNI: "); // validacion
-        scanf("%s", dni);
 
         validardni(dni);
 
@@ -365,6 +403,13 @@ void altaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
 
     } while (*cont_clientes < MAX_CLIENTES && resp == 'y');
 }
+
+// Subprograma: bajaCliente
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El array de clientes debe estar inicializado y debe contener al menos un cliente.
+// Objetivo: Dar de baja a un cliente del sistema y registrar su información en un fichero de texto.
 
 void bajaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
 { // almacenarlo en un fichero de texto con lo siguiente: Nombre completo del cliente – DNI – Tipo Cliente
@@ -413,6 +458,13 @@ void bajaCliente(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
     } while (posicion == -1 || resp == 'y');
 }
 
+// Subprograma: buscarcliente
+// Tipo: Función (int)
+// Parámetros de entrada: tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, char dni[10]
+// Parámetros de salida: int (posición del cliente en el array o -1 si no se encuentra)
+// Prerrequisitos: El array de clientes debe estar inicializado.
+// Objetivo: Buscar un cliente en el array de clientes por su DNI.
+
 int buscarcliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, char dni[10])
 {
     for (int i = 0; i < cont_clientes; i++)
@@ -424,6 +476,13 @@ int buscarcliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, char d
     }
     return -1;
 }
+
+// Subprograma: consultaCliente
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El array de clientes debe estar inicializado.
+// Objetivo: Consultar la información de un cliente en el sistema a partir de su DNI.
 
 void consultaCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
 {
@@ -441,18 +500,36 @@ void consultaCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
     if (buscarcliente(clientes, cont_clientes, dni) == -1)
     {
         printf("\nERROR: Cliente no encontrado\n");
-        system("pause");
     }
     else
     {
         printf("\nNombre: %s", clientes[posicion].nombre);
         printf("\nApellidos: %s", clientes[posicion].apellidos);
         printf("\nDNI: %s", clientes[posicion].dni);
-        printf("\nTipo de cliente: %d", clientes[posicion].tipoCliente);
+
+        if(clientes[posicion].tipoCliente == 1)
+        {
+            printf("\nTipo de cliente: Normal");
+        }
+        else if (clientes[posicion].tipoCliente == 2)
+        {
+            printf("\nTipo de cliente: VIP");
+        }
+        else if (clientes[posicion].tipoCliente == 3)
+        {
+            printf("\nTipo de cliente: Empresa");
+        }
         printf("\nHabitaciones reservadas: %d\n\n", clientes[posicion].habReservadas);
     }
     system("pause");
 }
+
+// Subprograma: modificarCliente
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El array de clientes debe estar inicializado y debe contener al menos un cliente.
+// Objetivo: Modificar la información de un cliente en el sistema.
 
 void modificarCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
 {
@@ -584,6 +661,13 @@ void modificarCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
     } while (posicion == -1 || resp == 'y' || resp == 'Y');
 }
 
+// Subprograma: listadoGeneralClientes
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El array de clientes debe estar inicializado.
+// Objetivo: Mostrar un listado general de todos los clientes registrados en el sistema.
+
 void listadoGeneralClientes(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
 {
     system("cls");
@@ -615,13 +699,20 @@ void listadoGeneralClientes(tReg_Cliente clientes[MAX_CLIENTES], int cont_client
     system("pause");
 }
 
+// Subprograma: listadoPorCategoria
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El array de clientes debe estar inicializado.
+// Objetivo: Mostrar un listado de los clientes registrados en el sistema filtrados por categoría (Normal, VIP, Empresa).
+
 void listadoPorCategoria(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
 {
     int categoria, totalnormal, totalvip, totalempresa;
 
     system("cls");
     printf("LISTADO POR CATEGORÍA DE CLIENTES");
-    printf("\n--------------------------------------------------");
+    printf("\n--------------------------------------------------\n");
     printf("Introduce la categoría a listar (1.- Normal)(2.- VIP)(3.- Empresa): ");
     scanf("%d", &categoria);
 
@@ -685,6 +776,13 @@ void listadoPorCategoria(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
     }
 }
 
+// Subprograma: altaHabitacion
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El array de habitaciones debe estar inicializado y no debe superar el límite MAX_HABITACIONES.
+// Objetivo: Dar de alta una nueva habitación en el sistema.
+
 void altaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones)
 {
     char resp;
@@ -721,13 +819,15 @@ void altaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_ha
             }
         } while (habitaciones[*cont_habitaciones].precioNoche < 0);
 
-        //hacer codigo automatico para asignar a cada habitación registrada
+        // hacer codigo automatico para asignar a cada habitación registrada
 
         char codigo[7];
         // con esto escribo una cadena con formato en el buffer creado, en este caso "codigo"
         snprintf(codigo, sizeof(codigo), "HAB%03d", *cont_habitaciones + 1);
 
         strcpy(habitaciones[*cont_habitaciones].codigo, codigo);
+
+        printf("\nCÓDIGO DE LA HABITACIÓN: %s", habitaciones[*cont_habitaciones].codigo);
 
         (*cont_habitaciones)++;
 
@@ -738,6 +838,13 @@ void altaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_ha
 
     } while (*cont_habitaciones < MAX_HABITACIONES && resp == 'y');
 }
+
+// Subprograma: bajaHabitacion
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El array de habitaciones debe estar inicializado y debe contener al menos una habitación.
+// Objetivo: Dar de baja una habitación del sistema y registrar su información en un fichero de texto.
 
 void bajaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones)
 {
@@ -805,6 +912,13 @@ void bajaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_ha
     } while (posicion == -1 || resp == 'y' || resp == 'Y');
 }
 
+// Subprograma: buscarHabitacion
+// Tipo: Función (int)
+// Parámetros de entrada: tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char codigo[7]
+// Parámetros de salida: int (posición de la habitación en el array o -1 si no se encuentra)
+// Prerrequisitos: El array de habitaciones debe estar inicializado.
+// Objetivo: Buscar una habitación en el array de habitaciones por su código.
+
 int buscarHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char codigo[7])
 {
     for (int i = 0; i < cont_habitaciones; i++)
@@ -817,9 +931,16 @@ int buscarHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_ha
     return -1;
 }
 
+// Subprograma: consultaHabitacion
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El array de habitaciones debe estar inicializado.
+// Objetivo: Consultar la información de una habitación en el sistema a partir de su código.
+
 void consultaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones)
 {
-    char codigo[7];
+    char codigo[7], tipo[20];
     int posicion;
 
     system("cls");
@@ -833,16 +954,38 @@ void consultaHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont
     if (buscarHabitacion(habitaciones, cont_habitaciones, codigo) == -1)
     {
         printf("\nERROR: Habitación no encontrada\n");
+        printf("\n");
         system("pause");
     }
     else
     {
         printf("\nCÓDIGO: %s", habitaciones[posicion].codigo);
-        printf("\nTipo de habitación: %d", habitaciones[posicion].tipoHabitacion);
+        
+        if(habitaciones[posicion].tipoHabitacion == 1)
+        {
+            strcmp(tipo, "Individual");
+        }
+        else if (habitaciones[posicion].tipoHabitacion == 2)
+        {
+            strcmp(tipo, "Doble");
+        }
+        else if (habitaciones[posicion].tipoHabitacion == 3)
+        {
+            strcmp(tipo, "Suite");
+        }
+        printf("\nTipo de habitación: %d", tipo);
         printf("\nPrecio por noche: %.2f", habitaciones[posicion].precioNoche);
     }
+    printf("\n");
     system("pause");
 }
+
+// Subprograma: modificarHabitacion
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El array de habitaciones debe estar inicializado y debe contener al menos una habitación.
+// Objetivo: Modificar la información de una habitación en el sistema.
 
 void modificarHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones)
 {
@@ -942,6 +1085,13 @@ void modificarHabitacion(tReg_Habitacion habitaciones[MAX_HABITACIONES], int con
     } while (posicion == -1 || resp == 'y' || resp == 'Y');
 }
 
+// Subprograma: listadoGeneralHabitaciones
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El array de habitaciones debe estar inicializado.
+// Objetivo: Mostrar un listado general de todas las habitaciones registradas en el sistema.
+
 void listadoGeneralHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones)
 {
     system("cls");
@@ -974,6 +1124,19 @@ void listadoGeneralHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], 
     printf("\n\n");
     system("pause");
 }
+
+// Subprograma: realizarReserva
+// Tipo: Procedimiento (void)
+// Parámetros de entrada:
+//   - tReg_Cliente clientes[MAX_CLIENTES]
+//   - int cont_clientes
+//   - tReg_Habitacion habitaciones[MAX_HABITACIONES]
+//   - int cont_habitaciones
+//   - char reservas[MAX_DIAS][MAX_HABITACIONES][10]
+//   - int *cont_reservas
+// Parámetros de salida: Ninguno
+// Prerrequisitos: Los arrays de clientes, habitaciones y reservas deben estar inicializados.
+// Objetivo: Realizar una reserva de una habitación para un cliente en un día específico.
 
 void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_reservas)
 {
@@ -1041,6 +1204,19 @@ void realizarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tRe
     printf("\nReserva realizada correctamente.\n");
     system("pause");
 }
+
+// Subprograma: cancelarReserva
+// Tipo: Procedimiento (void)
+// Parámetros de entrada:
+//   - tReg_Cliente clientes[MAX_CLIENTES]
+//   - int cont_clientes
+//   - tReg_Habitacion habitaciones[MAX_HABITACIONES]
+//   - int cont_habitaciones
+//   - char reservas[MAX_DIAS][MAX_HABITACIONES][10]
+//   - int *cont_reservas
+// Parámetros de salida: Ninguno
+// Prerrequisitos: Los arrays de clientes, habitaciones y reservas deben estar inicializados.
+// Objetivo: Cancelar todas las reservas asociadas a un cliente y registrar la cancelación en un fichero.
 
 void cancelarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_reservas)
 {
@@ -1115,6 +1291,18 @@ void cancelarReserva(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tRe
     system("pause");
 }
 
+// Subprograma: consultarReservasCliente
+// Tipo: Procedimiento (void)
+// Parámetros de entrada:
+//   - tReg_Cliente clientes[MAX_CLIENTES]
+//   - int cont_clientes
+//   - tReg_Habitacion habitaciones[MAX_HABITACIONES]
+//   - int cont_habitaciones
+//   - char reservas[MAX_DIAS][MAX_HABITACIONES][10]
+// Parámetros de salida: Ninguno
+// Prerrequisitos: Los arrays de clientes, habitaciones y reservas deben estar inicializados.
+// Objetivo: Consultar todas las reservas realizadas por un cliente específico.
+
 void consultarReservasCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10])
 {
     char resp;
@@ -1163,6 +1351,19 @@ void consultarReservasCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clie
     } while (resp == 'y' || resp == 'Y');
 }
 
+// Subprograma: listadoGeneralReservas
+// Tipo: Procedimiento (void)
+// Parámetros de entrada:
+//   - tReg_Cliente clientes[MAX_CLIENTES]
+//   - int cont_clientes
+//   - tReg_Habitacion habitaciones[MAX_HABITACIONES]
+//   - int cont_habitaciones
+//   - char reservas[MAX_DIAS][MAX_HABITACIONES][10]
+//   - int cont_reservas
+// Parámetros de salida: Ninguno
+// Prerrequisitos: Los arrays de clientes, habitaciones y reservas deben estar inicializados.
+// Objetivo: Mostrar un listado general de todas las reservas activas en el sistema.
+
 void listadoGeneralReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10], int cont_reservas)
 {
     system("cls");
@@ -1181,16 +1382,28 @@ void listadoGeneralReservas(tReg_Cliente clientes[MAX_CLIENTES], int cont_client
                 int posicionCliente = buscarcliente(clientes, cont_clientes, reservas[i][j]);
                 if (posicionCliente != -1)
                 {
-                    printf("%s %s\t\t%s\t\t%d\n", clientes[posicionCliente].nombre, clientes[posicionCliente].apellidos, habitaciones[j].codigo, habitaciones[j].tipoHabitacion);
+                    printf("\n%s %s\t\t%s\t\t%d\n", clientes[posicionCliente].nombre, clientes[posicionCliente].apellidos, habitaciones[j].codigo, habitaciones[j].tipoHabitacion);
                 }
             }
         }
     }
 
     printf("\n\n TOTAL: %d reservas activas", cont_reservas);
-
+    printf("\n");
     system("pause");
 }
+
+// Subprograma: informesEconomicos
+// Tipo: Procedimiento (void)
+// Parámetros de entrada:
+//   - tReg_Cliente clientes[MAX_CLIENTES]
+//   - int cont_clientes
+//   - tReg_Habitacion habitaciones[MAX_HABITACIONES]
+//   - int cont_habitaciones
+//   - char reservas[MAX_DIAS][MAX_HABITACIONES][10]
+// Parámetros de salida: Ninguno
+// Prerrequisitos: Los arrays de clientes, habitaciones y reservas deben estar inicializados.
+// Objetivo: Generar informes económicos relacionados con clientes, habitaciones y reservas.
 
 void informesEconomicos(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, char reservas[MAX_DIAS][MAX_HABITACIONES][10])
 {
@@ -1232,6 +1445,16 @@ void informesEconomicos(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, 
         }
     } while (opcion != 0);
 }
+
+// Subprograma: informeMensualPorCategoriaCliente
+// Tipo: Procedimiento (void)
+// Parámetros de entrada:
+//   - tReg_Cliente clientes[MAX_CLIENTES]
+//   - int cont_clientes
+//   - tReg_Habitacion habitaciones[MAX_HABITACIONES]
+// Parámetros de salida: Ninguno
+// Prerrequisitos: Los arrays de clientes y habitaciones deben estar inicializados.
+// Objetivo: Generar un informe mensual de clientes clasificados por categoría.
 
 void informeMensualPorCategoriaCliente(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes, tReg_Habitacion habitaciones[MAX_HABITACIONES])
 {
@@ -1291,6 +1514,13 @@ void informeMensualPorCategoriaCliente(tReg_Cliente clientes[MAX_CLIENTES], int 
     system("pause");
 }
 
+// Subprograma: informeMensualOcupacionHabitaciones
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: int cont_habitaciones
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El contador de habitaciones debe reflejar el número de habitaciones ocupadas.
+// Objetivo: Generar un informe mensual sobre la ocupación de habitaciones.
+
 void informeMensualOcupacionHabitaciones(int cont_habitaciones)
 {
     // total de habitaciones, ocupadas, libres, porcentaje de ocupación
@@ -1306,6 +1536,17 @@ void informeMensualOcupacionHabitaciones(int cont_habitaciones)
     printf("\n\n\n");
     system("pause");
 }
+
+// Subprograma: informeMensualIngresosReservas
+// Tipo: Procedimiento (void)
+// Parámetros de entrada:
+//   - char reservas[MAX_DIAS][MAX_HABITACIONES][10]
+//   - tReg_Habitacion habitaciones[MAX_HABITACIONES]
+//   - int cont_habitaciones
+//   - int cont_reservas
+// Parámetros de salida: Ninguno
+// Prerrequisitos: Los arrays de reservas y habitaciones deben estar inicializados.
+// Objetivo: Generar un informe mensual sobre los ingresos generados por las reservas.
 
 void informeMensualIngresosReservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10], tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones, int cont_reservas)
 {
@@ -1336,7 +1577,13 @@ void informeMensualIngresosReservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10
     system("pause");
 }
 
-// cargo al programa los clientes del fichero clientes.dat
+// Subprograma: cargarClientes
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El fichero "clientes.dat" debe existir y contener datos válidos.
+// Objetivo: Cargar los datos de los clientes desde un fichero binario al array de clientes.
+
 void cargarClientes(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
 {
     FILE *fichero;
@@ -1356,6 +1603,13 @@ void cargarClientes(tReg_Cliente clientes[MAX_CLIENTES], int *cont_clientes)
     fclose(fichero);
 }
 
+// Subprograma: ficheroclientes
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El array de clientes debe estar inicializado.
+// Objetivo: Guardar los datos de los clientes en un fichero binario.
+
 void ficheroclientes(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
 {
     FILE *fichero;
@@ -1363,7 +1617,7 @@ void ficheroclientes(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
 
     if (fichero == NULL)
     {
-        printf("Error al abrir el fichero\n");
+        printf("Error al abrir el fichero de clientes\n");
         return;
     }
 
@@ -1374,6 +1628,13 @@ void ficheroclientes(tReg_Cliente clientes[MAX_CLIENTES], int cont_clientes)
     fclose(fichero);
 }
 
+// Subprograma: cargarHabitaciones
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El fichero "habitaciones.dat" debe existir y contener datos válidos.
+// Objetivo: Cargar los datos de las habitaciones desde un fichero binario al array de habitaciones.
+
 void cargarHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones)
 {
     FILE *fichero;
@@ -1381,7 +1642,7 @@ void cargarHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *con
 
     if (fichero == NULL)
     {
-        printf("Error al abrir el fichero\n");
+        printf("Error al abrir el fichero de cargar habitaciones\n");
         return;
     }
 
@@ -1393,6 +1654,13 @@ void cargarHabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *con
     fclose(fichero);
 }
 
+// Subprograma: ficherohabitaciones
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El array de habitaciones debe estar inicializado.
+// Objetivo: Guardar los datos de las habitaciones en un fichero binario.
+
 void ficherohabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int cont_habitaciones)
 {
     FILE *fichero;
@@ -1400,7 +1668,7 @@ void ficherohabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int con
 
     if (fichero == NULL)
     {
-        printf("Error al abrir el fichero\n");
+        printf("Error al abrir el fichero de habitaciones\n");
         return;
     }
 
@@ -1411,6 +1679,13 @@ void ficherohabitaciones(tReg_Habitacion habitaciones[MAX_HABITACIONES], int con
     fclose(fichero);
 }
 
+// Subprograma: cargarReservas
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_reservas
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El fichero "reservas.dat" debe existir y contener datos válidos.
+// Objetivo: Cargar los datos de las reservas desde un fichero binario a la matriz de reservas.
+
 void cargarReservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_reservas)
 {
     FILE *fichero;
@@ -1418,7 +1693,7 @@ void cargarReservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_res
 
     if (fichero == NULL)
     {
-        printf("Error al abrir el fichero\n");
+        printf("Error al abrir el fichero de cargar reservas\n");
         return;
     }
 
@@ -1430,6 +1705,13 @@ void cargarReservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10], int *cont_res
     fclose(fichero);
 }
 
+// Subprograma: ficheroreservas
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: char reservas[MAX_DIAS][MAX_HABITACIONES][10], int cont_reservas
+// Parámetros de salida: Ninguno
+// Prerrequisitos: La matriz de reservas debe estar inicializada.
+// Objetivo: Guardar los datos de las reservas en un fichero binario.
+
 void ficheroreservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10], int cont_reservas)
 {
     FILE *fichero;
@@ -1437,7 +1719,7 @@ void ficheroreservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10], int cont_res
 
     if (fichero == NULL)
     {
-        printf("Error al abrir el fichero\n");
+        printf("Error al abrir el fichero de reservas\n");
         return;
     }
 
@@ -1448,7 +1730,13 @@ void ficheroreservas(char reservas[MAX_DIAS][MAX_HABITACIONES][10], int cont_res
     fclose(fichero);
 }
 
-// importar habitaciones nuevas desde un fichero de texto
+// Subprograma: importarHabitacionesDesdeFichero
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El fichero "habitacionesNuevas.txt" debe existir y contener datos válidos.
+// Objetivo: Importar nuevas habitaciones desde un fichero de texto al array de habitaciones.
+
 void importarHabitacionesDesdeFichero(tReg_Habitacion habitaciones[MAX_HABITACIONES], int *cont_habitaciones)
 {
     FILE *fichero;
@@ -1461,7 +1749,8 @@ void importarHabitacionesDesdeFichero(tReg_Habitacion habitaciones[MAX_HABITACIO
 
     if (fichero == NULL)
     {
-        printf("Error al abrir el fichero\n");
+        printf("Error al abrir el fichero de importacion de habitaciones\n");
+        system("pause");
         return;
     }
 
@@ -1527,6 +1816,13 @@ void importarHabitacionesDesdeFichero(tReg_Habitacion habitaciones[MAX_HABITACIO
     system("pause");
 }
 
+// Subprograma: contadores
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: int cont_clientes, int cont_habitaciones, int cont_reservas
+// Parámetros de salida: Ninguno
+// Prerrequisitos: Ninguno
+// Objetivo: Guardar los contadores de clientes, habitaciones y reservas en un fichero binario.
+
 void contadores(int cont_clientes, int cont_habitaciones, int cont_reservas)
 { // guardo los contadores en el fichero al final del programa
     FILE *fichero;
@@ -1534,7 +1830,7 @@ void contadores(int cont_clientes, int cont_habitaciones, int cont_reservas)
 
     if (fichero == NULL)
     {
-        printf("Error al abrir el fichero\n");
+        printf("Error al abrir el fichero de contadores\n");
         return;
     }
 
@@ -1545,6 +1841,13 @@ void contadores(int cont_clientes, int cont_habitaciones, int cont_reservas)
     fclose(fichero);
 }
 
+// Subprograma: cargarContadores
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: int *cont_clientes, int *cont_habitaciones, int *cont_reservas
+// Parámetros de salida: Ninguno
+// Prerrequisitos: El fichero "totalGlobalHotel.dat" debe existir y contener datos válidos.
+// Objetivo: Cargar los contadores de clientes, habitaciones y reservas desde un fichero binario.
+
 void cargarContadores(int *cont_clientes, int *cont_habitaciones, int *cont_reservas)
 { // cargo los contadores al inicio del programa
     FILE *fichero;
@@ -1552,7 +1855,7 @@ void cargarContadores(int *cont_clientes, int *cont_habitaciones, int *cont_rese
 
     if (fichero == NULL)
     {
-        printf("Error al abrir el fichero\n");
+        printf("Error al abrir el fichero de cargar contadores\n");
         return;
     }
 
@@ -1563,13 +1866,26 @@ void cargarContadores(int *cont_clientes, int *cont_habitaciones, int *cont_rese
     fclose(fichero);
 }
 
+// Subprograma: validardni
+// Tipo: Procedimiento (void)
+// Parámetros de entrada: char dni[10]
+// Parámetros de salida: Ninguno
+// Prerrequisitos: Ninguno
+// Objetivo: Validar el formato del DNI ingresado por el usuario.
+
 void validardni(char dni[10])
 {
     int valido = 0;
     do
     {
-        // Validar el DNI (aquí puedes implementar tu propia lógica de validación)
-        if (strlen(dni) == 9 && isdigit(dni[0]) && isdigit(dni[1]) && isdigit(dni[2]) && isdigit(dni[3]) && isdigit(dni[4]) && isdigit(dni[5]) && isdigit(dni[6]) && isdigit(dni[7]) && isalpha(dni[8]))
+        printf("\nDNI: ");
+        scanf("%s", dni);
+
+        if (strlen(dni) == 9 &&
+            isdigit(dni[0]) && isdigit(dni[1]) && isdigit(dni[2]) &&
+            isdigit(dni[3]) && isdigit(dni[4]) && isdigit(dni[5]) &&
+            isdigit(dni[6]) && isdigit(dni[7]) &&
+            isalpha(dni[8]))
         {
             valido = 1;
         }
