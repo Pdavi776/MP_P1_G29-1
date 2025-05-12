@@ -1,0 +1,5 @@
+Individual#50.0
+Doble#75.0
+Suite#120.0
+Individual#20.0
+Suite#50.0
